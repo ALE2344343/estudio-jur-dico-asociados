@@ -15,7 +15,7 @@
     </script>
 </head>
 <body>
-<div class="page-login" style="background: url('/img/fondo_login.jpg') no-repeat center center fixed; background-size: cover; position: relative;">
+<div class="page-login" style="background: url('{{ asset('img/fondo_login.jpg') }}') no-repeat center center fixed; background-size: cover; position: relative;">
 
     <!-- Header con logo -->
     <div class="login-header animate-in" style="text-align: center; position:relative; z-index:1; padding-top: 20px;">

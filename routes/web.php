@@ -60,6 +60,14 @@ Route::middleware([])->group(function () {
     Route::get('/calculadora/{id}', [CalculadoraController::class, 'showCalculo'])->name('calculadora.show');
 
     // Leyes
+    Route::get('/leyes/archivo/{path}', function ($path) {
+        $fullPath = storage_path('app/public/' . $path);
+        if (!file_exists($fullPath)) {
+            abort(404, 'Archivo no encontrado');
+        }
+        return response()->file($fullPath);
+    })->where('path', '.*')->name('leyes.descargar_archivo');
+
     Route::post('/leyes/{id}/upload-pdf', [LeyController::class, 'uploadPdf'])->name('leyes.upload_pdf');
     Route::resource('leyes', LeyController::class);
 

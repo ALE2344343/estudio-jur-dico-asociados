@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') — Estudio Jurídico & Asociados</title>
     <link rel="stylesheet" href="{{ asset('css/estudio.css') }}">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+    <link rel="icon" href="{{ asset('img/logo.png') }}">
+    
+    <!-- PWA / Modo Instalable en PC y Celular -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#0D1525">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Estudio Jurídico">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo.png') }}">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         const savedTheme = localStorage.getItem('theme');
@@ -205,6 +214,9 @@
                 </div>
 
                 <div style="display:flex;gap:10px;align-items:center;">
+                    <button id="btnInstalarApp" style="display:none;background:var(--gradient-gold);color:var(--navy-dark);border:none;border-radius:20px;padding:6px 14px;font-size:0.75rem;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(201,168,76,0.3);align-items:center;gap:6px;" title="Instalar como aplicación en este dispositivo">
+                        📲 Instalar App
+                    </button>
                     <button onclick="cambiarColorTema('#2a4365')" style="width:24px;height:24px;border-radius:50%;background:#2a4365;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,0.3);cursor:pointer;" title="Tema Celeste"></button>
                     <button onclick="cambiarColorTema('#1b4332')" style="width:24px;height:24px;border-radius:50%;background:#1b4332;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,0.3);cursor:pointer;" title="Tema Verde Oscuro"></button>
                 </div>
@@ -382,6 +394,37 @@
         if (overlay) {
             overlay.style.display = isOpen ? 'block' : 'none';
         }
+    }
+
+    // Registro de PWA y botón de instalación
+    let deferredPrompt = null;
+    const btnInstalar = document.getElementById('btnInstalarApp');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (btnInstalar) {
+            btnInstalar.style.display = 'inline-flex';
+        }
+    });
+
+    if (btnInstalar) {
+        btnInstalar.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    btnInstalar.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+    }
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
     }
 </script>
 </body>

@@ -219,7 +219,7 @@
         @endif
         <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             @if($ley->archivo_pdf)
-            <a href="{{ asset('storage/'.$ley->archivo_pdf) }}" target="_blank" class="btn-primary" style="font-size:0.78rem;display:inline-flex;align-items:center;gap:6px;">
+            <a href="{{ route('leyes.descargar_archivo', $ley->archivo_pdf) }}" target="_blank" class="btn-primary" style="font-size:0.78rem;display:inline-flex;align-items:center;gap:6px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                 Abrir PDF de la Ley
             </a>

@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estudio Jurídico & Asociados</title>
     <link rel="stylesheet" href="{{ asset('css/estudio.css') }}">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+    <link rel="icon" href="{{ asset('img/logo.png') }}">
+    
+    <!-- PWA / App Instalable -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#0D1525">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo.png') }}">
     <script>
         const savedColor = localStorage.getItem('temaColor');
         if (savedColor) {
@@ -15,7 +22,7 @@
     </script>
 </head>
 <body>
-<div class="page-inicio" style="background: url('/img/fondo_login.jpg') no-repeat center center fixed; background-size: cover; position: relative;">
+<div class="page-inicio" style="background: url('{{ asset('img/fondo_login.jpg') }}') no-repeat center center fixed; background-size: cover; position: relative;">
 
     <div class="inicio-header animate-in" style="text-align: center; position:relative; z-index:1;">
         <img src="{{ asset('img/logo.png') }}" alt="Estudio Jurídico & Asociados" style="max-width: 380px; display: block; margin: 0 auto;">

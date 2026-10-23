@@ -13,104 +13,118 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // ── USUARIOS ──
-        $admin = Usuario::create([
-            'nombre'      => 'Administrador',
-            'apellido'    => 'Sistema',
-            'username'    => 'admin',
-            'email'       => 'admin@estudiojuridico.bo',
-            'password'    => Hash::make('admin123'),
-            'rol'         => 'administrador',
-            'telefono'    => '72000001',
-            'especialidad'=> 'Administración',
-            'activo'      => true,
-        ]);
+        // ── USUARIOS (firstOrCreate evita duplicados) ──
+        $admin = Usuario::firstOrCreate(
+            ['username' => 'admin'],
+            [
+                'nombre'      => 'Administrador',
+                'apellido'    => 'Sistema',
+                'email'       => 'admin@estudiojuridico.bo',
+                'password'    => Hash::make('admin123'),
+                'rol'         => 'administrador',
+                'telefono'    => '72000001',
+                'especialidad'=> 'Administración',
+                'activo'      => true,
+            ]
+        );
 
-        $abogado1 = Usuario::create([
-            'nombre'      => 'Carlos Alberto',
-            'apellido'    => 'Mamani Quispe',
-            'username'    => 'cmamani',
-            'email'       => 'cmamani@estudiojuridico.bo',
-            'password'    => Hash::make('abogado123'),
-            'rol'         => 'abogado',
-            'telefono'    => '72000002',
-            'especialidad'=> 'Derecho Laboral',
-            'matricula'   => 'MAT-001-2020',
-            'activo'      => true,
-        ]);
+        $abogado1 = Usuario::firstOrCreate(
+            ['username' => 'cmamani'],
+            [
+                'nombre'      => 'Carlos Alberto',
+                'apellido'    => 'Mamani Quispe',
+                'email'       => 'cmamani@estudiojuridico.bo',
+                'password'    => Hash::make('abogado123'),
+                'rol'         => 'abogado',
+                'telefono'    => '72000002',
+                'especialidad'=> 'Derecho Laboral',
+                'matricula'   => 'MAT-001-2020',
+                'activo'      => true,
+            ]
+        );
 
-        $abogado2 = Usuario::create([
-            'nombre'      => 'María Fernanda',
-            'apellido'    => 'Vargas Chávez',
-            'username'    => 'mvargas',
-            'email'       => 'mvargas@estudiojuridico.bo',
-            'password'    => Hash::make('abogado123'),
-            'rol'         => 'abogado',
-            'telefono'    => '72000003',
-            'especialidad'=> 'Derecho Civil y Familia',
-            'matricula'   => 'MAT-002-2019',
-            'activo'      => true,
-        ]);
+        $abogado2 = Usuario::firstOrCreate(
+            ['username' => 'mvargas'],
+            [
+                'nombre'      => 'María Fernanda',
+                'apellido'    => 'Vargas Chávez',
+                'email'       => 'mvargas@estudiojuridico.bo',
+                'password'    => Hash::make('abogado123'),
+                'rol'         => 'abogado',
+                'telefono'    => '72000003',
+                'especialidad'=> 'Derecho Civil y Familia',
+                'matricula'   => 'MAT-002-2019',
+                'activo'      => true,
+            ]
+        );
 
-        // ── CLIENTES ──
-        $cliente1 = Cliente::create([
-            'codigo'       => 'CLI-0001',
-            'nombre'       => 'Juan Pedro',
-            'apellido'     => 'Flores Mendoza',
-            'ci'           => '4567891',
-            'ci_expedido'  => 'LP',
-            'telefono'     => '71234567',
-            'email'        => 'jpflores@gmail.com',
-            'ciudad'       => 'La Paz',
-            'departamento' => 'La Paz',
-            'ocupacion'    => 'Empleado',
-            'empresa'      => 'Industrias XYZ S.A.',
-            'estado'       => 'activo',
-            'usuario_id'   => $abogado1->id,
-        ]);
+        // ── CLIENTES (firstOrCreate evita duplicados) ──
+        $cliente1 = Cliente::firstOrCreate(
+            ['ci' => '4567891'],
+            [
+                'codigo'       => 'CLI-0001',
+                'nombre'       => 'Juan Pedro',
+                'apellido'     => 'Flores Mendoza',
+                'ci_expedido'  => 'LP',
+                'telefono'     => '71234567',
+                'email'        => 'jpflores@gmail.com',
+                'ciudad'       => 'La Paz',
+                'departamento' => 'La Paz',
+                'ocupacion'    => 'Empleado',
+                'empresa'      => 'Industrias XYZ S.A.',
+                'estado'       => 'activo',
+                'usuario_id'   => $abogado1->id,
+            ]
+        );
 
-        $cliente2 = Cliente::create([
-            'codigo'       => 'CLI-0002',
-            'nombre'       => 'Ana María',
-            'apellido'     => 'Condori Tito',
-            'ci'           => '7891234',
-            'ci_expedido'  => 'CB',
-            'telefono'     => '79876543',
-            'email'        => 'acondori@hotmail.com',
-            'ciudad'       => 'Cochabamba',
-            'departamento' => 'Cochabamba',
-            'estado'       => 'activo',
-            'usuario_id'   => $abogado2->id,
-        ]);
+        $cliente2 = Cliente::firstOrCreate(
+            ['ci' => '7891234'],
+            [
+                'codigo'       => 'CLI-0002',
+                'nombre'       => 'Ana María',
+                'apellido'     => 'Condori Tito',
+                'ci_expedido'  => 'CB',
+                'telefono'     => '79876543',
+                'email'        => 'acondori@hotmail.com',
+                'ciudad'       => 'Cochabamba',
+                'departamento' => 'Cochabamba',
+                'estado'       => 'activo',
+                'usuario_id'   => $abogado2->id,
+            ]
+        );
 
-        // ── CASOS ──
-        Caso::create([
-            'numero_caso'  => 'CASO-2025-0001',
-            'titulo'       => 'Demanda por Despido Injustificado — Flores vs. Industrias XYZ',
-            'descripcion'  => 'El trabajador fue despedido sin causa justificada después de 5 años de servicio.',
-            'tipo'         => 'Laboral',
-            'estado'       => 'activo',
-            'prioridad'    => 'alta',
-            'fecha_inicio' => '2025-01-15',
-            'fecha_vencimiento' => now()->addDays(30)->format('Y-m-d'),
-            'juzgado'      => 'Juzgado de Partido en lo Laboral N° 2 de La Paz',
-            'contraparte'  => 'Industrias XYZ S.A.',
-            'honorarios'   => 3500.00,
-            'cliente_id'   => $cliente1->id,
-            'abogado_id'   => $abogado1->id,
-        ]);
+        // ── CASOS (firstOrCreate evita duplicados) ──
+        Caso::firstOrCreate(
+            ['numero_caso' => 'CASO-2025-0001'],
+            [
+                'titulo'       => 'Demanda por Despido Injustificado — Flores vs. Industrias XYZ',
+                'descripcion'  => 'El trabajador fue despedido sin causa justificada después de 5 años de servicio.',
+                'tipo'         => 'Laboral',
+                'estado'       => 'activo',
+                'prioridad'    => 'alta',
+                'fecha_inicio' => '2025-01-15',
+                'fecha_vencimiento' => now()->addDays(30)->format('Y-m-d'),
+                'juzgado'      => 'Juzgado de Partido en lo Laboral N° 2 de La Paz',
+                'contraparte'  => 'Industrias XYZ S.A.',
+                'honorarios'   => 3500.00,
+                'cliente_id'   => $cliente1->id,
+                'abogado_id'   => $abogado1->id,
+            ]
+        );
 
-        Caso::create([
-            'numero_caso'  => 'CASO-2025-0002',
-            'titulo'       => 'Divorcio por Mutuo Acuerdo — Condori / Vásquez',
-            'tipo'         => 'Familia',
-            'estado'       => 'en_proceso',
-            'prioridad'    => 'media',
-            'fecha_inicio' => '2025-02-10',
-            'honorarios'   => 2000.00,
-            'cliente_id'   => $cliente2->id,
-            'abogado_id'   => $abogado2->id,
-        ]);
+        Caso::firstOrCreate(
+            ['numero_caso' => 'CASO-2025-0002'],
+            [
+                'titulo'       => 'Divorcio por Mutuo Acuerdo — Condori / Vásquez',
+                'tipo'         => 'Familia',
+                'estado'       => 'en_proceso',
+                'prioridad'    => 'media',
+                'fecha_inicio' => '2025-02-10',
+                'honorarios'   => 2000.00,
+                'cliente_id'   => $cliente2->id,
+                'abogado_id'   => $abogado2->id,
+            ]
+        );
 
         // LEYES
         $leyes = [
@@ -177,7 +191,10 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($leyes as $ley) {
-            Ley::create($ley);
+            Ley::firstOrCreate(
+                ['numero' => $ley['numero']],
+                collect($ley)->except('numero')->toArray()
+            );
         }
 
         $this->command->info('Base de datos inicializada con datos de prueba.');
