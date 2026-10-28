@@ -35,7 +35,7 @@
             </div>
             <select name="tipo" class="form-control" style="width:180px;">
                 <option value="">Todos los tipos</option>
-                @foreach(['Demanda','Contrato','Acuerdo','Sentencia','Auto','Memorial','Poder Notarial','Certificado','Resolución','Recurso','Apelación','Denuncia','Otro'] as $t)
+                @foreach(['Demanda','Contrato','Acuerdo','Sentencia','Auto','Memorial','Poder Notarial','Prueba','Certificado','Resolución','Recurso','Apelación','Denuncia','Otro'] as $t)
                 <option value="{{ $t }}" {{ request('tipo')==$t?'selected':'' }}>{{ $t }}</option>
                 @endforeach
             </select>
@@ -129,7 +129,7 @@
                 <div class="form-group">
                     <label class="form-label">Tipo *</label>
                     <select name="tipo" class="form-control" required>
-                        @foreach(['Demanda','Contrato','Acuerdo','Sentencia','Auto','Memorial','Poder Notarial','Certificado','Resolución','Recurso','Apelación','Denuncia','Otro'] as $t)
+                        @foreach(['Demanda','Contrato','Acuerdo','Sentencia','Auto','Memorial','Poder Notarial','Prueba','Certificado','Resolución','Recurso','Apelación','Denuncia','Otro'] as $t)
                         <option value="{{ $t }}">{{ $t }}</option>
                         @endforeach
                     </select>

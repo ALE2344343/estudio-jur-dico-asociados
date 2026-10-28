@@ -135,11 +135,14 @@
         
         <!-- Próximas Audiencias -->
         <div class="table-card">
-            <div class="table-card-header">
+            <div class="table-card-header" style="display:flex;justify-content:space-between;align-items:center;">
                 <div class="table-card-title">
                     <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/></svg>
                     RECORDATORIOS DE AUDIENCIAS
                 </div>
+                <button type="button" onclick="document.getElementById('modalCrearAudiencia').style.display='flex'" class="btn-primary" style="font-size:0.75rem;padding:5px 12px;">
+                    + Nueva Audiencia
+                </button>
             </div>
             <table>
                 <thead>
@@ -338,6 +341,9 @@
                             @endphp
                             <div style="font-weight:bold;color:{{ $diasCalendario <= 2 ? '#e74c3c' : '#0369a1' }};">
                                 {{ $notif->fecha_vencimiento->format('d/m/Y') }}
+                                @if($notif->hora_vencimiento)
+                                    <span style="font-size:0.75rem;color:#78350f;background:#fef3c7;padding:1px 5px;border-radius:4px;margin-left:4px;">⏰ {{ substr($notif->hora_vencimiento, 0, 5) }}</span>
+                                @endif
                             </div>
                             <div style="font-size:0.72rem;color:var(--text-gray);">
                                 @if($diasCalendario > 0)
@@ -376,6 +382,8 @@
                                         data-usuario="{{ $notif->usuario_id ?? '' }}"
                                         data-juzgado="{{ $notif->juzgado ?? '' }}"
                                         data-descripcion="{{ $notif->descripcion ?? '' }}"
+                                        data-hora="{{ $notif->hora_vencimiento ? substr($notif->hora_vencimiento, 0, 5) : '' }}"
+                                        data-recordatorio="{{ $notif->recordatorio_minutos ?? 60 }}"
                                         onclick="abrirModalEditarNotificacionDesdeBtn(this)"
                                         style="display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;">
                                     <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
@@ -399,6 +407,7 @@
     </div>
 
     <!-- SECCIÓN 4: ASIGNACIÓN DE PERMISOS Y USUARIOS (Abogados y Administradores) -->
+    @if($esAdmin)
     <div class="table-card">
         <div class="table-card-header">
             <div class="table-card-title">
@@ -489,6 +498,7 @@
             </table>
         </div>
     </div>
+    @endif
 
 </div>
 
@@ -563,6 +573,30 @@
                     </label>
                     <input type="date" id="inputFechaVencimiento" name="fecha_vencimiento" onchange="calcularDiasDesdeVencimiento()" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;background:white;">
                     <span id="textoCalculoHabiles" style="font-size:0.72rem;color:#0284c7;display:block;margin-top:2px;font-weight:600;"></span>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;background:#fffbeb;padding:12px;border-radius:8px;border:1px dashed #fcd34d;">
+                <div>
+                    <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:#92400e;">
+                        ⏰ Hora Límite de Presentación
+                    </label>
+                    <input type="time" name="hora_vencimiento" value="18:30" style="width:100%;padding:8px;border:1px solid #f59e0b;border-radius:6px;font-size:0.85rem;background:white;">
+                    <span style="font-size:0.7rem;color:#78350f;display:block;margin-top:2px;">Hora tope procesal del juzgado</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:#92400e;">
+                        🔔 Avisarme con Anticipación
+                    </label>
+                    <select name="recordatorio_minutos" style="width:100%;padding:8px;border:1px solid #f59e0b;border-radius:6px;font-size:0.85rem;background:white;">
+                        <option value="15">15 minutos antes</option>
+                        <option value="30">30 minutos antes</option>
+                        <option value="60" selected>1 hora antes (Recomendado)</option>
+                        <option value="120">2 horas antes</option>
+                        <option value="240">4 horas antes</option>
+                        <option value="1440">1 día antes (24 hrs)</option>
+                    </select>
+                    <span style="font-size:0.7rem;color:#78350f;display:block;margin-top:2px;">Alerta a Telegram del abogado</span>
                 </div>
             </div>
 
@@ -654,6 +688,30 @@
                 </div>
             </div>
 
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;background:#fffbeb;padding:12px;border-radius:8px;border:1px dashed #fcd34d;">
+                <div>
+                    <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:#92400e;">
+                        ⏰ Hora Límite de Presentación
+                    </label>
+                    <input type="time" id="editNotifHoraVencimiento" name="hora_vencimiento" style="width:100%;padding:8px;border:1px solid #f59e0b;border-radius:6px;font-size:0.85rem;background:white;">
+                    <span style="font-size:0.7rem;color:#78350f;display:block;margin-top:2px;">Hora tope procesal del juzgado</span>
+                </div>
+                <div>
+                    <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:#92400e;">
+                        🔔 Avisarme con Anticipación
+                    </label>
+                    <select id="editNotifRecordatorio" name="recordatorio_minutos" style="width:100%;padding:8px;border:1px solid #f59e0b;border-radius:6px;font-size:0.85rem;background:white;">
+                        <option value="15">15 minutos antes</option>
+                        <option value="30">30 minutos antes</option>
+                        <option value="60">1 hora antes (Recomendado)</option>
+                        <option value="120">2 horas antes</option>
+                        <option value="240">4 horas antes</option>
+                        <option value="1440">1 día antes (24 hrs)</option>
+                    </select>
+                    <span style="font-size:0.7rem;color:#78350f;display:block;margin-top:2px;">Alerta a Telegram del abogado</span>
+                </div>
+            </div>
+
             <div style="margin-bottom:20px;">
                 <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:var(--navy);">Detalle u Observaciones</label>
                 <textarea name="descripcion" id="editNotifDescripcion" rows="3" placeholder="Indicar términos del plazo..." style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;resize:vertical;"></textarea>
@@ -662,6 +720,61 @@
             <div style="display:flex;justify-content:flex-end;gap:10px;">
                 <button type="button" onclick="document.getElementById('modalEditarNotificacion').style.display='none'" class="btn-secondary">Cancelar</button>
                 <button type="submit" class="btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL PARA CREAR NUEVA AUDIENCIA JUDICIAL -->
+<div id="modalCrearAudiencia" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:12px;width:95%;max-width:520px;padding:25px;box-shadow:0 10px 30px rgba(0,0,0,0.3);border-top:5px solid var(--gold-dark);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 style="font-family:'Cinzel',serif;color:var(--navy);margin:0;font-size:1.1rem;">Programar Nueva Audiencia</h3>
+            <button onclick="document.getElementById('modalCrearAudiencia').style.display='none'" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-gray);">&times;</button>
+        </div>
+        <form id="formCrearAudiencia" method="POST" action="">
+            @csrf
+            <div style="margin-bottom:15px;">
+                <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:var(--navy);">Caso Relacionado *</label>
+                <select name="caso_id_selector" id="crearAudCasoSelector" onchange="actualizarActionCrearAudiencia(this.value)" required style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;">
+                    <option value="">-- Seleccionar Expediente / Caso --</option>
+                    @foreach($casos as $c)
+                        <option value="{{ $c->id }}">
+                            {{ $c->numero_caso }} - {{ Str::limit($c->titulo, 35) }} ({{ $c->abogado ? $c->abogado->nombre_completo : 'Sin abogado' }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:var(--navy);">Título de la Audiencia *</label>
+                <input type="text" name="titulo" required placeholder="Ej: Audiencia Preliminar, Conciliación, Medidas Cautelares" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;">
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:var(--navy);">Fecha y Hora *</label>
+                <input type="datetime-local" name="fecha_hora" required style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;">
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:var(--navy);">Lugar / Juzgado / Enlace Virtual</label>
+                <input type="text" name="lugar" placeholder="Ej: Juzgado 1ro de Partido en lo Civil / Sala 2 / Google Meet" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:var(--navy);">Avisarme con Anticipación</label>
+                <select name="recordatorio_minutos" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:0.85rem;background:white;">
+                    <option value="15" selected>15 minutos antes (Recomendado)</option>
+                    <option value="30">30 minutos antes</option>
+                    <option value="60">1 hora antes</option>
+                    <option value="120">2 horas antes</option>
+                    <option value="1440">1 día antes (24 hrs)</option>
+                </select>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <button type="button" onclick="document.getElementById('modalCrearAudiencia').style.display='none'" class="btn-secondary">Cancelar</button>
+                <button type="submit" class="btn-primary" id="btnSubmitCrearAud" disabled>Guardar Audiencia</button>
             </div>
         </form>
     </div>
@@ -927,7 +1040,7 @@ function calcularDiasDesdeVencimientoEdit() {
 
 function abrirModalEditarNotificacionDesdeBtn(btn) {
     const d = btn.dataset;
-    abrirModalEditarNotificacion(d.id, d.titulo, d.materia, d.recepcion, d.vencimiento, d.caso, d.usuario, d.juzgado, d.descripcion);
+    abrirModalEditarNotificacion(d.id, d.titulo, d.materia, d.recepcion, d.vencimiento, d.caso, d.usuario, d.juzgado, d.descripcion, d.hora, d.recordatorio);
 }
 
 function abrirModalEditarAudienciaDesdeBtn(btn) {
@@ -935,9 +1048,9 @@ function abrirModalEditarAudienciaDesdeBtn(btn) {
     abrirModalEditarAudiencia(d.id, d.titulo, d.fecha, d.lugar, d.recordatorio);
 }
 
-function abrirModalEditarNotificacion(id, titulo, materia, fechaRecepcion, fechaVencimiento, casoId, usuarioId, juzgado, descripcion) {
+function abrirModalEditarNotificacion(id, titulo, materia, fechaRecepcion, fechaVencimiento, casoId, usuarioId, juzgado, descripcion, horaVencimiento = '', recordatorio = 60) {
     const form = document.getElementById('formEditarNotificacion');
-    form.action = '/gestion-legal/notificaciones/' + id;
+    form.action = "{{ url('gestion-legal/notificaciones') }}/" + id;
 
     const selectMateria = document.getElementById('editNotifMateria');
     if (selectMateria) {
@@ -951,6 +1064,12 @@ function abrirModalEditarNotificacion(id, titulo, materia, fechaRecepcion, fecha
     document.getElementById('editNotifUsuarioId').value = usuarioId || '';
     document.getElementById('editNotifJuzgado').value = juzgado || '';
     document.getElementById('editNotifDescripcion').value = descripcion || '';
+
+    const inputHora = document.getElementById('editNotifHoraVencimiento');
+    if (inputHora) inputHora.value = horaVencimiento || '18:30';
+
+    const selectRec = document.getElementById('editNotifRecordatorio');
+    if (selectRec) selectRec.value = recordatorio || 60;
 
     // Si ya tiene fecha de recepción y fecha de vencimiento, calcular los días automáticamente
     if (fechaRecepcion && fechaVencimiento) {
@@ -966,7 +1085,7 @@ function abrirModalEditarNotificacion(id, titulo, materia, fechaRecepcion, fecha
 
 function abrirModalEditarAudiencia(id, titulo, fechaHora, lugar, recordatorio) {
     const form = document.getElementById('formEditarAudiencia');
-    form.action = '/gestion-legal/audiencias/' + id;
+    form.action = "{{ url('gestion-legal/audiencias') }}/" + id;
 
     document.getElementById('editAudTitulo').value = titulo || '';
     document.getElementById('editAudFechaHora').value = fechaHora || '';
@@ -974,6 +1093,18 @@ function abrirModalEditarAudiencia(id, titulo, fechaHora, lugar, recordatorio) {
     document.getElementById('editAudRecordatorio').value = recordatorio || 15;
 
     document.getElementById('modalEditarAudiencia').style.display = 'flex';
+}
+
+function actualizarActionCrearAudiencia(casoId) {
+    const form = document.getElementById('formCrearAudiencia');
+    const btn = document.getElementById('btnSubmitCrearAud');
+    if (casoId) {
+        form.action = "{{ url('casos') }}/" + casoId + "/audiencias";
+        btn.disabled = false;
+    } else {
+        form.action = "";
+        btn.disabled = true;
+    }
 }
 
 function filtrarTablasGestion(texto) {

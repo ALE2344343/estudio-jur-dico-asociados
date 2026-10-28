@@ -81,8 +81,8 @@
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label">Teléfono * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(7 dígitos fijo u 8 dígitos móvil)</span></label>
-                        <input type="tel" name="telefono" class="form-control" value="{{ old('telefono') }}" required placeholder="Ej: 22441234 o 72000001">
+                        <label class="form-label">Teléfono <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Opcional - 7 dígitos fijo u 8 dígitos móvil)</span></label>
+                        <input type="tel" name="telefono" class="form-control" value="{{ old('telefono') }}" placeholder="Ej: 22441234 o 72000001">
                         @error('telefono')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">

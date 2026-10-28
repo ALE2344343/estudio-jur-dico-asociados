@@ -65,5 +65,33 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         }
+
+        // Auto-actualización de esquema en MySQL:
+        // 1. Asegurar que 'telefono' en 'clientes' sea NULLABLE para que nunca bloquee registros con teléfono vacío
+        // 2. Asegurar que 'tipo' en 'documentos' sea VARCHAR(100) para permitir 'Prueba', 'Poder Notarial', imágenes, etc.
+        try {
+            if (!\Illuminate\Support\Facades\Cache::has('db_schema_patch_v2')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE clientes MODIFY telefono VARCHAR(255) NULL");
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE documentos MODIFY tipo VARCHAR(100) NOT NULL DEFAULT 'Otro'");
+                \Illuminate\Support\Facades\Cache::forever('db_schema_patch_v2', true);
+            }
+        } catch (\Throwable $e) {
+            // Ignorar excepciones transitorias de conexión
+        }
+
+        // Auto-ejecución invisible del motor de alertas de Telegram en segundo plano
+        // Verifica si el motor está corriendo; si no, lo enciende silenciosamente sin ventanas
+        try {
+            if (!\Illuminate\Support\Facades\Cache::has('motor_alertas_activo_check')) {
+                \Illuminate\Support\Facades\Cache::put('motor_alertas_activo_check', true, now()->addMinutes(10));
+                $phpCmd = is_file('C:/nuevo xap/php/php.exe') ? 'C:/nuevo xap/php/php.exe' : 'php';
+                $artisanPath = base_path('artisan');
+                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                    @pclose(@popen("start /min \"\" \"{$phpCmd}\" \"{$artisanPath}\" alertas:despachar", "r"));
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silencioso
+        }
     }
 }

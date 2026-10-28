@@ -42,8 +42,8 @@
                            value="{{ old('fecha_nacimiento', $cliente->fecha_nacimiento ? \Carbon\Carbon::parse($cliente->fecha_nacimiento)->format('Y-m-d') : '') }}">
                     @error('fecha_nacimiento')<span style="color:red;font-size:0.8rem;">{{ $message }}</span>@enderror
                 </div>
-                <div class="form-group"><label class="form-label">Teléfono * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(7 dígitos fijo u 8 dígitos móvil)</span></label>
-                    <input type="tel" name="telefono" class="form-control" value="{{ old('telefono',$cliente->telefono) }}" required>
+                <div class="form-group"><label class="form-label">Teléfono <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Opcional - 7 dígitos fijo u 8 dígitos móvil)</span></label>
+                    <input type="tel" name="telefono" class="form-control" value="{{ old('telefono',$cliente->telefono) }}">
                     @error('telefono')<span style="color:red;font-size:0.8rem;">{{ $message }}</span>@enderror
                 </div>
                 <div class="form-group"><label class="form-label">Celular <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Exactamente 8 dígitos iniciando en 6 o 7)</span></label>

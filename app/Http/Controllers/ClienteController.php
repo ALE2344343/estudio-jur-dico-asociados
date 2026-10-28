@@ -75,7 +75,7 @@ class ClienteController extends Controller
             'nombre'           => 'required|min:2|max:80|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'apellido'         => 'required|min:2|max:80|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'ci'               => 'required|regex:/^[1-9]\d{4,8}$/|unique:clientes,ci',
-            'telefono'         => 'required|regex:/^[23467]\d{6,7}$/',
+            'telefono'         => 'nullable|regex:/^[23467]\d{6,7}$/',
             'celular'          => 'nullable|regex:/^[67]\d{7}$/',
             'email'            => 'nullable|email|max:100',
             'fecha_nacimiento' => 'nullable|date|after_or_equal:1925-01-01|before:today',
@@ -97,7 +97,8 @@ class ClienteController extends Controller
         $data['nombre'] = mb_convert_case(trim($request->nombre), MB_CASE_TITLE, 'UTF-8');
         $data['apellido'] = mb_convert_case(trim($request->apellido), MB_CASE_TITLE, 'UTF-8');
         $data['codigo'] = Cliente::generarCodigo();
-        if (!isset($data['usuario_id'])) {
+        $data['telefono'] = $request->filled('telefono') ? trim($request->telefono) : '';
+        if (empty($data['usuario_id'])) {
             $data['usuario_id'] = Session::get('usuario_id');
         }
 
@@ -130,7 +131,7 @@ class ClienteController extends Controller
             'nombre'           => 'required|min:2|max:80|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'apellido'         => 'required|min:2|max:80|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'ci'               => 'required|regex:/^[1-9]\d{4,8}$/|unique:clientes,ci,' . $id,
-            'telefono'         => 'required|regex:/^[23467]\d{6,7}$/',
+            'telefono'         => 'nullable|regex:/^[23467]\d{6,7}$/',
             'celular'          => 'nullable|regex:/^[67]\d{7}$/',
             'email'            => 'nullable|email|max:100',
             'fecha_nacimiento' => 'nullable|date|after_or_equal:1925-01-01|before:today',
@@ -151,6 +152,7 @@ class ClienteController extends Controller
         $dataCliente = $request->except(['_token', '_method']);
         $dataCliente['nombre'] = mb_convert_case(trim($request->nombre), MB_CASE_TITLE, 'UTF-8');
         $dataCliente['apellido'] = mb_convert_case(trim($request->apellido), MB_CASE_TITLE, 'UTF-8');
+        $dataCliente['telefono'] = $request->filled('telefono') ? trim($request->telefono) : '';
         HistorialActividad::registrarCambios('Clientes', "cliente {$cliente->nombre_completo} (Cód: {$cliente->codigo})", $cliente, $dataCliente, [
             'nombre'           => 'Nombre',
             'apellido'         => 'Apellido',

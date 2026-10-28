@@ -15,6 +15,8 @@ class Notificacion extends Model
         'tipo',
         'fecha_recepcion',
         'fecha_vencimiento',
+        'hora_vencimiento',
+        'recordatorio_minutos',
         'descripcion',
         'juzgado',
         'estado',

@@ -17,6 +17,18 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
+        window.APP_URL = "{{ url('/') }}";
+        window.APP_CONFIG = {
+            baseUrl: "{{ url('/') }}",
+            csrfToken: "{{ csrf_token() }}",
+            rutas: {
+                alertasPendientes: "{{ route('alertas.pendientes') }}",
+                despacharAlerta: "{{ route('alertas.externas.despachar') }}",
+                configExterna: "{{ route('alertas.externas.config') }}",
+                detectarTelegram: "{{ route('alertas.externas.detectar') }}",
+                probarExterna: "{{ route('alertas.externas.probar') }}"
+            }
+        };
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') { document.documentElement.classList.add('dark-mode-active'); }
         const savedColor = localStorage.getItem('temaColor');
@@ -84,7 +96,6 @@
             </a>
             @endif
 
-            @if(session('usuario_rol') === 'administrador')
             <a href="{{ route('gestion.index') }}"
                class="nav-item {{ request()->routeIs('gestion.*') ? 'active' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -92,7 +103,6 @@
                 </svg>
                 Control y Asignaciones
             </a>
-            @endif
 
             <a href="{{ route('leyes.index') }}"
                class="nav-item {{ request()->routeIs('leyes.*') ? 'active' : '' }}">

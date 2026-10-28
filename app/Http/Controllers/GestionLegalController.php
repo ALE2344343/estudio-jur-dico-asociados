@@ -23,36 +23,66 @@ class GestionLegalController extends Controller
         return null;
     }
 
+    private function checkAdminOrAbogado()
+    {
+        if (!Session::has('usuario_id')) return redirect()->route('inicio');
+        return null;
+    }
+
     public function index()
     {
-        if ($r = $this->checkAdmin()) return $r;
+        if ($r = $this->checkAdminOrAbogado()) return $r;
+
+        $rol = Session::get('usuario_rol');
+        $userId = Session::get('usuario_id');
+        $esAdmin = ($rol === 'administrador');
 
         // 1. Usuarios (Abogados y Administradores)
         $usuarios = Usuario::orderBy('rol', 'desc')->orderBy('nombre', 'asc')->get();
         $abogados = Usuario::where('rol', 'abogado')->where('activo', true)->orderBy('nombre')->get();
 
         // 2. Casos y Asignaciones
-        $casos = Caso::with(['cliente', 'abogado'])->orderBy('created_at', 'desc')->get();
+        $casosQuery = Caso::with(['cliente', 'abogado'])->orderBy('created_at', 'desc');
+        if (!$esAdmin) {
+            $casosQuery->where('abogado_id', $userId);
+        }
+        $casos = $casosQuery->get();
 
         // 3. Recordatorios: Audiencias y Plazos Procesales
-        $audiencias = Audiencia::with(['caso.abogado', 'caso.cliente'])
+        $audienciasQuery = Audiencia::with(['caso.abogado', 'caso.cliente'])
             ->where('fecha_hora', '>=', now()->startOfDay())
-            ->orderBy('fecha_hora', 'asc')
-            ->get();
+            ->orderBy('fecha_hora', 'asc');
+        if (!$esAdmin) {
+            $audienciasQuery->whereHas('caso', function($q) use ($userId) {
+                $q->where('abogado_id', $userId);
+            });
+        }
+        $audiencias = $audienciasQuery->get();
 
-        $plazos = Caso::with(['abogado', 'cliente'])
+        $plazosQuery = Caso::with(['abogado', 'cliente'])
             ->whereNotNull('fecha_vencimiento')
             ->whereIn('estado', ['activo', 'en_proceso'])
-            ->orderBy('fecha_vencimiento', 'asc')
-            ->get();
+            ->orderBy('fecha_vencimiento', 'asc');
+        if (!$esAdmin) {
+            $plazosQuery->where('abogado_id', $userId);
+        }
+        $plazos = $plazosQuery->get();
 
         // 4. Llegada de Notificaciones Judiciales
-        $notificaciones = Notificacion::with(['caso', 'usuario'])
+        $notificacionesQuery = Notificacion::with(['caso.abogado', 'usuario'])
             ->orderBy('estado', 'asc')
-            ->orderBy('fecha_recepcion', 'desc')
-            ->get();
+            ->orderBy('fecha_recepcion', 'desc');
+        if (!$esAdmin) {
+            $notificacionesQuery->where(function($q) use ($userId) {
+                $q->where('usuario_id', $userId)
+                  ->orWhereHas('caso', function($qc) use ($userId) {
+                      $qc->where('abogado_id', $userId);
+                  });
+            });
+        }
+        $notificaciones = $notificacionesQuery->get();
 
-        return view('gestion.index', compact('usuarios', 'abogados', 'casos', 'audiencias', 'plazos', 'notificaciones'));
+        return view('gestion.index', compact('usuarios', 'abogados', 'casos', 'audiencias', 'plazos', 'notificaciones', 'esAdmin'));
     }
 
     // Cambiar rol de usuario (administrador / abogado)
@@ -189,15 +219,17 @@ class GestionLegalController extends Controller
         if ($r = $this->checkAdmin()) return $r;
 
         $request->validate([
-            'titulo'            => 'required|max:200',
-            'materia'           => 'nullable|string|in:civil,penal,laboral,accion_libertad',
-            'fecha_recepcion'   => 'required|date',
-            'caso_id'           => 'nullable|exists:casos,id',
-            'usuario_id'        => 'nullable|exists:usuarios,id',
-            'dias_habiles'      => 'nullable|integer|min:1|max:120',
-            'fecha_vencimiento' => 'nullable|date',
-            'juzgado'           => 'nullable|max:150',
-            'descripcion'       => 'nullable',
+            'titulo'               => 'required|max:200',
+            'materia'              => 'nullable|string|in:civil,penal,laboral,accion_libertad',
+            'fecha_recepcion'      => 'required|date',
+            'caso_id'              => 'nullable|exists:casos,id',
+            'usuario_id'           => 'nullable|exists:usuarios,id',
+            'dias_habiles'         => 'nullable|integer|min:1|max:120',
+            'fecha_vencimiento'    => 'nullable|date',
+            'hora_vencimiento'     => 'nullable',
+            'recordatorio_minutos' => 'nullable|integer',
+            'juzgado'              => 'nullable|max:150',
+            'descripcion'          => 'nullable',
         ]);
 
         $data = $request->all();
@@ -225,7 +257,11 @@ class GestionLegalController extends Controller
         $detalleTelegram = "";
         if ($destinatario) {
             $casoTxt = $notif->caso ? $notif->caso->numero_caso : 'General';
-            $vencTxt = $notif->fecha_vencimiento ? "Plazo fatal / Vencimiento: " . Carbon::parse($notif->fecha_vencimiento)->format('d/m/Y') : null;
+            $vencTxt = null;
+            if ($notif->fecha_vencimiento) {
+                $horaTxt = $notif->hora_vencimiento ? " a las " . substr($notif->hora_vencimiento, 0, 5) : "";
+                $vencTxt = "Plazo fatal / Vencimiento: " . Carbon::parse($notif->fecha_vencimiento)->format('d/m/Y') . $horaTxt;
+            }
             $res = NotificadorExternoService::notificarUsuario(
                 $destinatario,
                 "Notificación Judicial Recibida ({$notif->tipo})",
@@ -253,15 +289,17 @@ class GestionLegalController extends Controller
         $notif = Notificacion::findOrFail($id);
 
         $request->validate([
-            'titulo'            => 'required|max:200',
-            'materia'           => 'nullable|string|in:civil,penal,laboral,accion_libertad',
-            'fecha_recepcion'   => 'required|date',
-            'caso_id'           => 'nullable|exists:casos,id',
-            'usuario_id'        => 'nullable|exists:usuarios,id',
-            'dias_habiles'      => 'nullable|integer|min:1|max:120',
-            'fecha_vencimiento' => 'nullable|date',
-            'juzgado'           => 'nullable|max:150',
-            'descripcion'       => 'nullable',
+            'titulo'               => 'required|max:200',
+            'materia'              => 'nullable|string|in:civil,penal,laboral,accion_libertad',
+            'fecha_recepcion'      => 'required|date',
+            'caso_id'              => 'nullable|exists:casos,id',
+            'usuario_id'           => 'nullable|exists:usuarios,id',
+            'dias_habiles'         => 'nullable|integer|min:1|max:120',
+            'fecha_vencimiento'    => 'nullable|date',
+            'hora_vencimiento'     => 'nullable',
+            'recordatorio_minutos' => 'nullable|integer',
+            'juzgado'              => 'nullable|max:150',
+            'descripcion'          => 'nullable',
         ]);
 
         $data = $request->all();

@@ -10,8 +10,11 @@ use App\Models\CalculoFiniquito;
 use App\Models\Audiencia;
 use App\Models\CalendarioAnotacion;
 use App\Models\HistorialActividad;
+use App\Models\Notificacion;
 use App\Services\NotificadorExternoService;
+use App\Services\GoogleCalendarHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
@@ -63,35 +66,67 @@ class DashboardController extends Controller
 
             $eventosCalendario = [];
             foreach ($todasAudiencias as $aud) {
+                $fAud = \Carbon\Carbon::parse($aud->fecha_hora)->format('Y-m-d');
+                $hAud = \Carbon\Carbon::parse($aud->fecha_hora)->format('H:i');
+                $titAud = ($aud->caso ? $aud->caso->numero_caso : 'Audiencia') . ' - ' . $aud->titulo;
+                $gLink = GoogleCalendarHelper::generarEnlace(
+                    titulo: $titAud,
+                    fecha: $fAud,
+                    hora: $hAud,
+                    descripcion: "Audiencia Judicial\n" . ($aud->caso ? "Caso: {$aud->caso->numero_caso} - {$aud->caso->titulo}\n" : "") . ($aud->lugar ? "Juzgado: {$aud->lugar}" : ""),
+                    ubicacion: $aud->lugar ?? 'Juzgado asignado'
+                );
+
                 $eventosCalendario[] = [
-                    'id'       => 'aud_' . $aud->id,
-                    'tipo'     => 'audiencia',
-                    'titulo'   => ($aud->caso ? $aud->caso->numero_caso : 'Audiencia') . ' - ' . $aud->titulo,
-                    'hora'     => \Carbon\Carbon::parse($aud->fecha_hora)->format('H:i'),
-                    'fecha'    => \Carbon\Carbon::parse($aud->fecha_hora)->format('Y-m-d'),
-                    'color'    => '#0F766E', // Verde esmeralda
-                    'lugar'    => $aud->lugar ?? 'Sin juzgado especificado',
-                    'caso'     => $aud->caso ? $aud->caso->numero_caso . ' (' . $aud->caso->titulo . ')' : '',
-                    'link'     => $aud->caso_id ? route('casos.show', $aud->caso_id) : '#'
+                    'id'          => 'aud_' . $aud->id,
+                    'tipo'        => 'audiencia',
+                    'titulo'      => $titAud,
+                    'hora'        => $hAud,
+                    'fecha'       => $fAud,
+                    'color'       => '#0F766E', // Verde esmeralda
+                    'lugar'       => $aud->lugar ?? 'Sin juzgado especificado',
+                    'caso'        => $aud->caso ? $aud->caso->numero_caso . ' (' . $aud->caso->titulo . ')' : '',
+                    'link'        => $aud->caso_id ? route('casos.show', $aud->caso_id) : '#',
+                    'google_link' => $gLink,
                 ];
             }
             foreach ($plazosCasos as $c) {
+                $fPlazo = \Carbon\Carbon::parse($c->fecha_vencimiento)->format('Y-m-d');
+                $titPlazo = 'Vencimiento Plazo: ' . $c->numero_caso;
+                $gLink = GoogleCalendarHelper::generarEnlace(
+                    titulo: $titPlazo,
+                    fecha: $fPlazo,
+                    hora: '23:59',
+                    descripcion: "Plazo Procesal Fatal\nCaso: {$c->numero_caso} - {$c->titulo}\nJuzgado: " . ($c->juzgado ?: 'N/A'),
+                    ubicacion: $c->juzgado ?: 'Tribunal de Justicia'
+                );
+
                 $eventosCalendario[] = [
-                    'id'       => 'plazo_' . $c->id,
-                    'tipo'     => 'plazo',
-                    'titulo'   => 'Plazo: ' . $c->numero_caso,
-                    'hora'     => '23:59',
-                    'fecha'    => \Carbon\Carbon::parse($c->fecha_vencimiento)->format('Y-m-d'),
-                    'color'    => '#B45309', // Ámbar
-                    'lugar'    => 'Vencimiento Procesal',
-                    'caso'     => $c->numero_caso . ' (' . $c->titulo . ')',
-                    'link'     => route('casos.show', $c->id)
+                    'id'          => 'plazo_' . $c->id,
+                    'tipo'        => 'plazo',
+                    'titulo'      => 'Plazo: ' . $c->numero_caso,
+                    'hora'        => '23:59',
+                    'fecha'       => $fPlazo,
+                    'color'       => '#B45309', // Ámbar
+                    'lugar'       => 'Vencimiento Procesal',
+                    'caso'        => $c->numero_caso . ' (' . $c->titulo . ')',
+                    'link'        => route('casos.show', $c->id),
+                    'google_link' => $gLink,
                 ];
             }
 
             // Anotaciones PERSONALES del abogado (SOLO las suyas, nadie más las ve excepto el admin)
             $misAnotaciones = CalendarioAnotacion::where('usuario_id', $usuarioId)->get();
             foreach ($misAnotaciones as $nota) {
+                $fNota = $nota->fecha->format('Y-m-d');
+                $gLink = GoogleCalendarHelper::generarEnlace(
+                    titulo: $nota->titulo,
+                    fecha: $fNota,
+                    hora: $nota->hora,
+                    descripcion: $nota->descripcion ?: 'Recordatorio personal en el bufete',
+                    ubicacion: 'Estudio Jurídico & Asociados'
+                );
+
                 $eventosCalendario[] = [
                     'id'                   => 'nota_' . $nota->id,
                     'nota_id'              => $nota->id,
@@ -99,13 +134,14 @@ class DashboardController extends Controller
                     'titulo'               => ($nota->hora ? $nota->hora . ' - ' : '') . $nota->titulo,
                     'titulo_puro'          => $nota->titulo,
                     'hora'                 => $nota->hora ?? '',
-                    'fecha'                => $nota->fecha->format('Y-m-d'),
+                    'fecha'                => $fNota,
                     'color'                => $nota->color ?? '#2563EB',
                     'lugar'                => 'Anotación Personal',
                     'caso'                 => 'Recordatorio Personal',
                     'detalle'              => $nota->descripcion ?? '',
                     'recordatorio_minutos' => $nota->recordatorio_minutos ?? 5,
                     'link'                 => '#',
+                    'google_link'          => $gLink,
                     'es_propia'            => true,
                 ];
             }
@@ -283,7 +319,7 @@ class DashboardController extends Controller
                 ->orderBy('fecha_hora', 'asc')
                 ->get();
         } else {
-            $audiencias = Audiencia::with(['caso.cliente'])
+            $audiencias = Audiencia::with(['caso.cliente', 'caso.abogado'])
                 ->whereHas('caso', function($q) use ($usuarioId) {
                     $q->where('abogado_id', $usuarioId);
                 })
@@ -293,7 +329,7 @@ class DashboardController extends Controller
         }
 
         foreach ($audiencias as $aud) {
-            $audCarbon = \Carbon\Carbon::parse($aud->fecha_hora)->startOfMinute();
+            $audCarbon = \Carbon\Carbon::parse($aud->fecha_hora, config('app.timezone'))->startOfMinute();
             $horaFormat = $audCarbon->format('H:i');
             $diffMinutos = (int) round($ahoraMinuto->diffInMinutes($audCarbon, false));
 
@@ -310,20 +346,23 @@ class DashboardController extends Controller
                 'minutos'              => $diffMinutos,
                 'recordatorio_minutos' => $aud->recordatorio_minutos ?? 15,
                 'color'                => '#0F766E',
+                'destinatario'         => $aud->caso?->abogado ?? Usuario::find($usuarioId),
             ];
         }
 
         // 2. CITAS Y ANOTACIONES DEL CALENDARIO DE HOY
-        $anotaciones = CalendarioAnotacion::where('usuario_id', $usuarioId)
-            ->whereDate('fecha', $hoy)
-            ->get();
+        $anotacionesQuery = CalendarioAnotacion::with('usuario')->whereDate('fecha', $hoy);
+        if ($usuarioRol !== 'administrador') {
+            $anotacionesQuery->where('usuario_id', $usuarioId);
+        }
+        $anotaciones = $anotacionesQuery->get();
 
         foreach ($anotaciones as $nota) {
             $horaStr = $nota->hora ? substr($nota->hora, 0, 5) : '09:00';
             $diffMinutos = null;
             if ($nota->hora) {
                 try {
-                    $horaCarbon = \Carbon\Carbon::createFromFormat('!Y-m-d H:i', $hoy . ' ' . $horaStr)->startOfMinute();
+                    $horaCarbon = \Carbon\Carbon::createFromFormat('!Y-m-d H:i', $hoy . ' ' . $horaStr, config('app.timezone'))->startOfMinute();
                     $diffMinutos = (int) round($ahoraMinuto->diffInMinutes($horaCarbon, false));
                 } catch (\Exception $e) {
                     $diffMinutos = 0;
@@ -343,10 +382,55 @@ class DashboardController extends Controller
                 'minutos'              => $diffMinutos,
                 'recordatorio_minutos' => $nota->recordatorio_minutos ?? 5,
                 'color'                => $nota->color ?? '#2563EB',
+                'destinatario'         => $nota->usuario ?? Usuario::find($usuarioId),
             ];
         }
 
-        // 3. PLAZOS PROCESALES URGENTES (Hoy o Mañana)
+        // 3. NOTIFICACIONES JUDICIALES CON VENCIMIENTO HOY
+        $notificacionesQuery = Notificacion::with(['caso.abogado', 'caso.cliente', 'usuario'])
+            ->where('estado', '!=', 'atendido')
+            ->whereDate('fecha_vencimiento', $hoy);
+
+        if ($usuarioRol !== 'administrador') {
+            $notificacionesQuery->where(function($q) use ($usuarioId) {
+                $q->where('usuario_id', $usuarioId)
+                  ->orWhereHas('caso', function($qc) use ($usuarioId) {
+                      $qc->where('abogado_id', $usuarioId);
+                  });
+            });
+        }
+        $notificacionesHoy = $notificacionesQuery->get();
+
+        foreach ($notificacionesHoy as $notif) {
+            $horaStr = $notif->hora_vencimiento ? substr($notif->hora_vencimiento, 0, 5) : '23:59';
+            $diffMinutos = null;
+            try {
+                $horaCarbon = \Carbon\Carbon::createFromFormat('!Y-m-d H:i', $hoy . ' ' . $horaStr, config('app.timezone'))->startOfMinute();
+                $diffMinutos = (int) round($ahoraMinuto->diffInMinutes($horaCarbon, false));
+            } catch (\Exception $e) {
+                $diffMinutos = 0;
+            }
+
+            $destinatarioNotif = $notif->usuario ?? ($notif->caso?->abogado ?? Usuario::find($usuarioId));
+
+            $alertas[] = [
+                'id'                   => 'notif_' . $notif->id,
+                'tipo'                 => 'Notificación Judicial',
+                'badge'                => 'Vencimiento Judicial',
+                'titulo'               => $notif->titulo,
+                'hora'                 => $horaStr,
+                'lugar'                => $notif->juzgado ?? 'Juzgado asignado',
+                'caso'                 => $notif->caso ? $notif->caso->numero_caso . ' - ' . $notif->caso->titulo : 'Sin expediente',
+                'detalle'              => ($notif->juzgado ? 'Juzgado: ' . $notif->juzgado : '') . ($notif->caso ? ' | Caso: ' . $notif->caso->numero_caso : ''),
+                'link'                 => route('gestion.index'),
+                'minutos'              => $diffMinutos,
+                'recordatorio_minutos' => $notif->recordatorio_minutos ?? 15,
+                'color'                => '#DC2626',
+                'destinatario'         => $destinatarioNotif,
+            ];
+        }
+
+        // 4. PLAZOS PROCESALES URGENTES DE CASOS (Hoy o Mañana)
         $plazos = Caso::where(function($q) use ($usuarioId, $usuarioRol) {
                 if ($usuarioRol !== 'administrador') {
                     $q->where('abogado_id', $usuarioId);
@@ -373,6 +457,53 @@ class DashboardController extends Controller
                 'minutos'        => $esHoy ? 0 : 1440,
                 'color'          => '#B45309',
             ];
+        }
+
+        // 5. MOTOR DE DISPARO AUTOMÁTICO A TELEGRAM (Doble garantía en servidor)
+        foreach ($alertas as $al) {
+            $diff = $al['minutos'] ?? null;
+            if ($diff === null) continue;
+
+            $ant = (int) ($al['recordatorio_minutos'] ?? 5);
+            $idUnico = $al['id'];
+            $horaRef = $al['hora'];
+            $dest = $al['destinatario'] ?? Usuario::find($usuarioId);
+
+            // A. Despacho previo con anticipación (ej. 15 o 5 minutos antes)
+            if ($ant > 0 && $diff <= $ant && $diff > 0) {
+                $cacheKeyPrevio = "tg_previo_{$idUnico}_{$hoy}_{$ant}";
+                if (!Cache::has($cacheKeyPrevio)) {
+                    Cache::put($cacheKeyPrevio, true, now()->addHours(6));
+                    if ($dest) {
+                        NotificadorExternoService::notificarUsuario(
+                            $dest,
+                            "Recordatorio (en {$diff} min): {$al['titulo']}",
+                            "Hora programada: {$al['hora']}\n"
+                            . ($al['caso'] ? "Expediente: {$al['caso']}\n" : "")
+                            . ($al['detalle'] ? "Detalle: {$al['detalle']}" : ""),
+                            "Aviso automático con anticipación de {$ant} minutos."
+                        );
+                    }
+                }
+            }
+
+            // B. Despacho a la hora exacta (entre 0 y -5 minutos)
+            if ($diff <= 0 && $diff >= -5) {
+                $cacheKeyExacto = "tg_exacto_{$idUnico}_{$hoy}_{$horaRef}";
+                if (!Cache::has($cacheKeyExacto)) {
+                    Cache::put($cacheKeyExacto, true, now()->addHours(6));
+                    if ($dest) {
+                        NotificadorExternoService::notificarUsuario(
+                            $dest,
+                            "ES LA HORA: {$al['titulo']}",
+                            "Hora programada: {$al['hora']}\n"
+                            . ($al['caso'] ? "Expediente: {$al['caso']}\n" : "")
+                            . ($al['detalle'] ? "Detalle: {$al['detalle']}" : ""),
+                            "Iniciando ahora en el sistema."
+                        );
+                    }
+                }
+            }
         }
 
         return response()->json([

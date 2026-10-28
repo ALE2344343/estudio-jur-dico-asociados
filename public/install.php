@@ -146,8 +146,16 @@ if ($installing) {
         $seedDetail = $seedOk ? 'Datos iniciales cargados (admin, abogados, clientes, casos, leyes).' : nl2br(htmlspecialchars($r['output']));
         logStep('🌱', 'Datos iniciales', $seedDetail, $seedOk);
 
-        // PASO 7 — Storage link
-        $r = runArtisan($phpCmd, $basePath, 'storage:link');
+        // PASO 7 — Storage link (en Windows Junction es 100% compatible con Apache)
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $storagePublic = $basePath . '/public/storage';
+            $storageAppPublic = $basePath . '/storage/app/public';
+            if (!file_exists($storagePublic)) {
+                @exec("cmd /c mklink /J \"$storagePublic\" \"$storageAppPublic\" 2>&1");
+            }
+        } else {
+            runArtisan($phpCmd, $basePath, 'storage:link');
+        }
         logStep('🔗', 'Enlace de storage', 'Enlace público creado para archivos/documentos.', true);
 
         // PASO 8 — Limpiar caché

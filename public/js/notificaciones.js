@@ -6,6 +6,14 @@
 (function () {
     'use strict';
 
+    function obtenerRuta(nombre, fallback) {
+        if (window.APP_CONFIG && window.APP_CONFIG.rutas && window.APP_CONFIG.rutas[nombre]) {
+            return window.APP_CONFIG.rutas[nombre];
+        }
+        const base = (window.APP_URL || (window.APP_CONFIG && window.APP_CONFIG.baseUrl) || '').replace(/\/$/, '');
+        return base + fallback;
+    }
+
     // Generador de sonido de alerta jurídica (Web Audio API)
     function reproducirSonidoAlerta() {
         try {
@@ -122,8 +130,10 @@
         mostrarToastAlerta(`<strong>${alerta.badge || alerta.tipo}:</strong> ${alerta.titulo} (${alerta.hora})`, 'warning', alerta.link);
 
         // Enviar también la alerta en vivo al celular Telegram 
-        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        fetch('/alertas/externas/despachar', {
+        const csrf = (window.APP_CONFIG && window.APP_CONFIG.csrfToken)
+            || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            || '';
+        fetch(obtenerRuta('despacharAlerta', '/alertas/externas/despachar'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -148,7 +158,7 @@
         if (!modal) return;
         modal.style.display = 'flex';
 
-        fetch('/alertas/externas/config', {
+        fetch(obtenerRuta('configExterna', '/alertas/externas/config'), {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(r => r.json())
@@ -187,7 +197,7 @@
 
         mostrarEstadoModalExterno('Guardando configuración de Telegram...', true);
 
-        fetch('/alertas/externas/config', {
+        fetch(obtenerRuta('configExterna', '/alertas/externas/config'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -221,7 +231,7 @@
                 boxLista.innerHTML = 'Buscando mensajes recientes enviados a @Bethg_bot en Telegram...';
             }
 
-            fetch('/alertas/externas/detectar-telegram', {
+            fetch(obtenerRuta('detectarTelegram', '/alertas/externas/detectar-telegram'), {
                 headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(r => r.json())
@@ -259,7 +269,7 @@
             mostrarEstadoModalExterno('Enviando alerta de prueba a tu Telegram...', true);
             const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
-            fetch('/alertas/externas/probar', {
+            fetch(obtenerRuta('probarExterna', '/alertas/externas/probar'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -366,7 +376,7 @@
 
     // Consulta periódica al servidor para verificar eventos de hoy
     function consultarAlertasPendientes() {
-        fetch('/alertas/pendientes', {
+        fetch(obtenerRuta('alertasPendientes', '/alertas/pendientes'), {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'

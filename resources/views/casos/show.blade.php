@@ -141,15 +141,23 @@
                 <select name="tipo" class="form-control" required>
                     <option value="Memorial">Memorial</option>
                     <option value="Prueba">Prueba</option>
-                    <option value="Poder">Poder</option>
+                    <option value="Demanda">Demanda</option>
+                    <option value="Poder Notarial">Poder Notarial</option>
                     <option value="Contrato">Contrato</option>
+                    <option value="Sentencia">Sentencia</option>
+                    <option value="Auto">Auto</option>
                     <option value="Resolución">Resolución</option>
+                    <option value="Acuerdo">Acuerdo</option>
+                    <option value="Certificado">Certificado</option>
+                    <option value="Recurso">Recurso</option>
+                    <option value="Apelación">Apelación</option>
+                    <option value="Denuncia">Denuncia</option>
                     <option value="Otro">Otro</option>
                 </select>
             </div>
             <div class="form-group" style="margin-bottom:15px;">
-                <label class="form-label">Archivo (PDF, Word, Imágenes)</label>
-                <input type="file" name="archivo" class="form-control" accept=".pdf,.doc,.docx,.jpg,.png">
+                <label class="form-label">Archivo (PDF, Word, Excel, Imágenes)</label>
+                <input type="file" name="archivo" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.gif,.zip">
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
                 <button type="button" class="btn-secondary" onclick="document.getElementById('modalDoc').style.display='none'">Cancelar</button>

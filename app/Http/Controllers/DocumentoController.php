@@ -67,6 +67,9 @@ class DocumentoController extends Controller
         ]);
 
         $data = $request->only(['nombre','descripcion','tipo','notas']);
+        if ($data['tipo'] === 'Poder') {
+            $data['tipo'] = 'Poder Notarial';
+        }
         $data['caso_id']    = $request->caso_id ?: null;
         $data['cliente_id'] = $request->cliente_id ?: null;
         $data['codigo']     = Documento::generarCodigo();
@@ -86,7 +89,7 @@ class DocumentoController extends Controller
         $doc = Documento::create($data);
         $casoTxt = $doc->caso ? " (Caso: {$doc->caso->numero_caso})" : "";
         HistorialActividad::registrar('Documentos', 'Creación', "Subió el documento '{$doc->nombre}'{$casoTxt}", $doc->id);
-        return redirect()->route('documentos.index')->with('success','Documento registrado.');
+        return back()->with('success','Documento registrado exitosamente.');
     }
 
     public function show(int $id)

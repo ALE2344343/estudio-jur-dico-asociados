@@ -90,6 +90,10 @@
                 </button>
             </form>
             <button type="button" onclick="document.getElementById('modalEventoCal').style.display='none'" class="btn-secondary" style="font-size:0.8rem;padding:6px 14px;">Cerrar</button>
+            <a id="btnGoogleCalendarModal" href="#" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="display:none;background:#4285F4;color:white;border:none;font-size:0.8rem;padding:6px 14px;align-items:center;gap:6px;text-decoration:none;font-weight:600;border-radius:4px;" title="Agendar en tu cuenta de Google Calendar para que suene en tu celular">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5v-5z"/></svg>
+                Google Calendar
+            </a>
             <a id="modalEventoLink" href="#" class="btn-primary" style="display:none;font-size:0.8rem;padding:6px 14px;">Ver Caso Completo</a>
         </div>
     </div>
@@ -559,9 +563,10 @@
 
         const btnEditar = document.getElementById('btnEditarNotaModal');
         const formEliminar = document.getElementById('formEliminarNota');
+        const baseUrlAnotaciones = "{{ url('calendario/anotaciones') }}";
         if (ev.tipo === 'anotacion' && ev.nota_id) {
             if (btnEditar) btnEditar.style.display = 'inline-block';
-            formEliminar.action = `/calendario/anotaciones/${ev.nota_id}`;
+            formEliminar.action = `${baseUrlAnotaciones}/${ev.nota_id}`;
             formEliminar.style.display = 'inline-block';
         } else {
             if (btnEditar) btnEditar.style.display = 'none';
@@ -576,6 +581,16 @@
             linkBtn.style.display = 'none';
         }
 
+        const btnGCal = document.getElementById('btnGoogleCalendarModal');
+        if (btnGCal) {
+            if (ev.google_link) {
+                btnGCal.href = ev.google_link;
+                btnGCal.style.display = 'inline-flex';
+            } else {
+                btnGCal.style.display = 'none';
+            }
+        }
+
         document.getElementById('modalEventoCal').style.display = 'flex';
     }
 
@@ -584,7 +599,7 @@
         
         document.getElementById('modalEventoCal').style.display = 'none';
         
-        document.getElementById('formEditarAnotacion').action = `/calendario/anotaciones/${eventoActualSeleccionado.nota_id}`;
+        document.getElementById('formEditarAnotacion').action = `{{ url('calendario/anotaciones') }}/${eventoActualSeleccionado.nota_id}`;
         document.getElementById('editNotaTitulo').value = eventoActualSeleccionado.titulo_puro || eventoActualSeleccionado.titulo || '';
         document.getElementById('editNotaFecha').value = eventoActualSeleccionado.fecha || '';
         document.getElementById('editNotaHora').value = eventoActualSeleccionado.hora ? eventoActualSeleccionado.hora.substring(0, 5) : '';
