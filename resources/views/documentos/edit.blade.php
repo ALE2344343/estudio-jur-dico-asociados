@@ -31,7 +31,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Vincular a Caso</label>
+                <label class="form-label">Vincular a CASO</label>
                 <select name="caso_id" class="form-control">
                     <option value="">Sin vincular...</option>
                     @foreach($casos as $c)

@@ -28,12 +28,12 @@
         <div class="form-body">
             <div class="form-grid">
                 <div class="form-group">
-                    <label class="form-label">Nombre * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Solo letras, se guardará con mayúscula inicial)</span></label>
+                    <label class="form-label">Nombre * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Se guardará con mayúscula inicial)</span></label>
                     <input type="text" name="nombre" class="form-control" value="{{ old('nombre',$usuario->nombre) }}" required>
                     @error('nombre')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Apellido * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Solo letras, se guardará con mayúscula inicial)</span></label>
+                    <label class="form-label">Apellido * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Se guardará con mayúscula inicial)</span></label>
                     <input type="text" name="apellido" class="form-control" value="{{ old('apellido',$usuario->apellido) }}" required>
                     @error('apellido')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                 </div>

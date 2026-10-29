@@ -89,7 +89,7 @@ class CasoController extends Controller
             'numero_expediente' => 'nullable|regex:/^\d{5,15}$/',
         ], [
             'titulo.min'                => 'El título del caso debe ser descriptivo (mínimo 4 caracteres).',
-            'numero_expediente.regex'   => 'El NUREJ (Número de Expediente) no es válido (debe tener entre 5 y 15 dígitos numéricos reales).',
+            'numero_expediente.regex'   => 'El NUREJ (Número de Expediente) no es válido (debe tener entre 5 y 15 dígitos numéricos).',
         ]);
         $data = $request->all();
         $data['numero_caso'] = Caso::generarNumero();

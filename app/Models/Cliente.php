@@ -44,8 +44,16 @@ class Cliente extends Model
         return $this->hasMany(CalculoFiniquito::class, 'cliente_id');
     }
 
-    public static function generarCodigo(): string
+    public static function generarCodigo(?string $ci = null, ?string $expedido = null): string
     {
+        if (!empty($ci)) {
+            $base = 'CI-' . trim($ci);
+            if (!empty($expedido)) {
+                $base .= '-' . strtoupper(trim($expedido));
+            }
+            return $base;
+        }
+
         $ultimo = self::orderBy('id', 'desc')->first();
         $numero = $ultimo ? (int) substr($ultimo->codigo, 4) + 1 : 1;
         return 'CLI-' . str_pad($numero, 4, '0', STR_PAD_LEFT);

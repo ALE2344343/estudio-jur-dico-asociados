@@ -69,11 +69,11 @@
         <!-- Casos del cliente -->
         <div class="table-card" style="margin-bottom:20px;">
             <div class="table-card-header">
-                <div class="table-card-title">📁 CASOS ({{ $cliente->casos->count() }})</div>
+                <div class="table-card-title">📁 NUREJ / EXPEDIENTES ({{ $cliente->casos->count() }})</div>
                 @if(session('usuario_rol') === 'administrador') <a href="{{ route('casos.create') }}?cliente={{ $cliente->id }}" class="btn-primary" style="font-size:0.72rem;padding:6px 12px;">+ Nuevo</a> @endif
             </div>
             <table>
-                <thead><tr><th>N° Caso</th><th>Título</th><th>Tipo</th><th>Estado</th></tr></thead>
+                <thead><tr><th>NUREJ</th><th>Título</th><th>Tipo</th><th>Estado</th></tr></thead>
                 <tbody>
                     @forelse($cliente->casos as $caso)
                     <tr>

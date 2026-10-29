@@ -53,7 +53,7 @@
         <div class="table-card-header">
             <div class="table-card-title">
                 <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                ASIGNACIÓN DE CASOS A ABOGADOS
+                ASIGNACIÓN DE NUREJ / EXPEDIENTES A ABOGADOS
             </div>
             <span style="font-size:0.8rem;color:var(--text-gray);">Asigna o reasigna cada proceso en tiempo real</span>
         </div>
@@ -61,7 +61,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>N° Caso</th>
+                        <th>NUREJ</th>
                         <th>Título</th>
                         <th>Cliente</th>
                         <th>Abogado Asignado</th>
@@ -579,14 +579,14 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;background:#fffbeb;padding:12px;border-radius:8px;border:1px dashed #fcd34d;">
                 <div>
                     <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:#92400e;">
-                        ⏰ Hora Límite de Presentación
+                        Hora Límite de Presentación
                     </label>
                     <input type="time" name="hora_vencimiento" value="18:30" style="width:100%;padding:8px;border:1px solid #f59e0b;border-radius:6px;font-size:0.85rem;background:white;">
                     <span style="font-size:0.7rem;color:#78350f;display:block;margin-top:2px;">Hora tope procesal del juzgado</span>
                 </div>
                 <div>
                     <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:#92400e;">
-                        🔔 Avisarme con Anticipación
+                        Avisarme con Anticipación
                     </label>
                     <select name="recordatorio_minutos" style="width:100%;padding:8px;border:1px solid #f59e0b;border-radius:6px;font-size:0.85rem;background:white;">
                         <option value="15">15 minutos antes</option>
@@ -691,14 +691,14 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;background:#fffbeb;padding:12px;border-radius:8px;border:1px dashed #fcd34d;">
                 <div>
                     <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:#92400e;">
-                        ⏰ Hora Límite de Presentación
+                        Hora Límite de Presentación
                     </label>
                     <input type="time" id="editNotifHoraVencimiento" name="hora_vencimiento" style="width:100%;padding:8px;border:1px solid #f59e0b;border-radius:6px;font-size:0.85rem;background:white;">
                     <span style="font-size:0.7rem;color:#78350f;display:block;margin-top:2px;">Hora tope procesal del juzgado</span>
                 </div>
                 <div>
                     <label style="display:block;font-size:0.8rem;font-weight:bold;margin-bottom:5px;color:#92400e;">
-                        🔔 Avisarme con Anticipación
+                        Avisarme con Anticipación
                     </label>
                     <select id="editNotifRecordatorio" name="recordatorio_minutos" style="width:100%;padding:8px;border:1px solid #f59e0b;border-radius:6px;font-size:0.85rem;background:white;">
                         <option value="15">15 minutos antes</option>

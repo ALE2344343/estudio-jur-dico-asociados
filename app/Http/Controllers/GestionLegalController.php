@@ -31,7 +31,10 @@ class GestionLegalController extends Controller
 
     public function index()
     {
-        if ($r = $this->checkAdminOrAbogado()) return $r;
+        if (!Session::has('usuario_id')) return redirect()->route('inicio');
+        if (Session::get('usuario_rol') !== 'administrador') {
+            return redirect()->route('dashboard')->with('error', 'El Centro de Control y Asignaciones es exclusivo para el Administrador.');
+        }
 
         $rol = Session::get('usuario_rol');
         $userId = Session::get('usuario_id');

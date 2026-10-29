@@ -20,11 +20,11 @@
                 <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--gold-dark);letter-spacing:2px;margin-bottom:15px;border-bottom:1px solid rgba(201,168,76,0.2);padding-bottom:8px;">INFORMACIÓN DEL CASO</div>
                 <div class="form-grid">
                     <div class="form-group span-2">
-                        <label class="form-label">Título del Caso *</label>
+                        <label class="form-label">Título del Proceso *</label>
                         <input type="text" name="titulo" class="form-control" value="{{ old('titulo') }}" required placeholder="Ej: Demanda por despido injustificado — Juan Pérez vs. Empresa XYZ">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tipo de Caso *</label>
+                        <label class="form-label">Tipo de Materia *</label>
                         <select name="tipo" class="form-control" required>
                             @foreach(['Civil','Penal','Laboral','Familia','Comercial','Administrativo','Constitucional','Tributario','Otro'] as $t)
                             <option value="{{ $t }}" {{ old('tipo')==$t?'selected':'' }}>{{ $t }}</option>

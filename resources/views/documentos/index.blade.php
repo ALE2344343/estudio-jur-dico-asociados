@@ -135,9 +135,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Caso Relacionado</label>
+                    <label class="form-label">CASO Relacionado</label>
                     <select name="caso_id" class="form-control">
-                        <option value="">Sin caso</option>
+                        <option value="">Sin CASO</option>
                         @foreach($casos as $c)
                         <option value="{{ $c->id }}">{{ $c->numero_caso }} — {{ $c->titulo }}</option>
                         @endforeach

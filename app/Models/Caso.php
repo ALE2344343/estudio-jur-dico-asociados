@@ -76,7 +76,7 @@ class Caso extends Model
         $anio = date('Y');
         $ultimo = self::whereYear('created_at', $anio)->orderBy('id', 'desc')->first();
         $numero = $ultimo ? (int) substr($ultimo->numero_caso, -4) + 1 : 1;
-        return 'CASO-' . $anio . '-' . str_pad($numero, 4, '0', STR_PAD_LEFT);
+        return 'NUREJ-' . $anio . '-' . str_pad($numero, 4, '0', STR_PAD_LEFT);
     }
 }
 

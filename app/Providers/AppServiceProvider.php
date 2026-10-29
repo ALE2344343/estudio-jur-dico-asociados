@@ -69,11 +69,29 @@ class AppServiceProvider extends ServiceProvider
         // Auto-actualización de esquema en MySQL:
         // 1. Asegurar que 'telefono' en 'clientes' sea NULLABLE para que nunca bloquee registros con teléfono vacío
         // 2. Asegurar que 'tipo' en 'documentos' sea VARCHAR(100) para permitir 'Prueba', 'Poder Notarial', imágenes, etc.
+        // 3. Asegurar que 'articulos' y 'descripcion' en 'leyes' sean LONGTEXT para leyes extensas
+        // 4. Migrar los códigos de clientes existentes a formato CI
         try {
-            if (!\Illuminate\Support\Facades\Cache::has('db_schema_patch_v2')) {
+            if (!\Illuminate\Support\Facades\Cache::has('db_schema_patch_v5')) {
                 \Illuminate\Support\Facades\DB::statement("ALTER TABLE clientes MODIFY telefono VARCHAR(255) NULL");
                 \Illuminate\Support\Facades\DB::statement("ALTER TABLE documentos MODIFY tipo VARCHAR(100) NOT NULL DEFAULT 'Otro'");
-                \Illuminate\Support\Facades\Cache::forever('db_schema_patch_v2', true);
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE leyes MODIFY articulos LONGTEXT NULL");
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE leyes MODIFY descripcion LONGTEXT NULL");
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE leyes MODIFY notas LONGTEXT NULL");
+
+                // Actualizar clientes que aún tengan formato antiguo 'CLI-...'
+                $clientesAntiguos = \App\Models\Cliente::whereNotNull('ci')->get();
+                foreach ($clientesAntiguos as $cl) {
+                    $nuevoCod = \App\Models\Cliente::generarCodigo($cl->ci, $cl->ci_expedido);
+                    if ($cl->codigo !== $nuevoCod) {
+                        \Illuminate\Support\Facades\DB::table('clientes')->where('id', $cl->id)->update(['codigo' => $nuevoCod]);
+                    }
+                }
+
+                // Actualizar casos existentes de 'CASO-...' a 'NUREJ-...'
+                \Illuminate\Support\Facades\DB::statement("UPDATE casos SET numero_caso = REPLACE(numero_caso, 'CASO-', 'NUREJ-') WHERE numero_caso LIKE 'CASO-%'");
+
+                \Illuminate\Support\Facades\Cache::forever('db_schema_patch_v5', true);
             }
         } catch (\Throwable $e) {
             // Ignorar excepciones transitorias de conexión

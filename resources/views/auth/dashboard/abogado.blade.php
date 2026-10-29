@@ -239,7 +239,7 @@
         </div>
         <div class="stat-info">
             <div class="stat-num">{{ $totalCasos }}</div>
-            <div class="stat-label">Total Casos</div>
+            <div class="stat-label">Total NUREJ</div>
         </div>
     </div>
     <div class="stat-card">
@@ -248,7 +248,7 @@
         </div>
         <div class="stat-info">
             <div class="stat-num">{{ $casosActivos }}</div>
-            <div class="stat-label">Casos Activos</div>
+            <div class="stat-label">NUREJ Activos</div>
         </div>
     </div>
     <div class="stat-card">
@@ -257,7 +257,7 @@
         </div>
         <div class="stat-info">
             <div class="stat-num">{{ $casosUrgentes }}</div>
-            <div class="stat-label">Casos Urgentes</div>
+            <div class="stat-label">NUREJ Urgentes</div>
         </div>
     </div>
 </div>
@@ -275,7 +275,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>N° Caso</th>
+                    <th>NUREJ</th>
                     <th>Titulo</th>
                     <th>Tipo</th>
                     <th>Estado</th>
@@ -293,7 +293,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="4" style="text-align:center;color:var(--text-gray);padding:25px;">No hay casos registrados</td></tr>
+                <tr><td colspan="4" style="text-align:center;color:var(--text-gray);padding:25px;">No hay NUREJ registrados</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -338,7 +338,7 @@
     @php
         $accesos = [
             ['route'=>'clientes.index','label'=>'Mis Clientes','color'=>'#C9A84C'],
-            ['route'=>'casos.index','label'=>'Mis Casos','color'=>'#1A2744'],
+            ['route'=>'casos.index','label'=>'Mis NUREJ','color'=>'#1A2744'],
             ['route'=>'documentos.index','label'=>'Documentos','color'=>'#28a745'],
             ['route'=>'leyes.index','label'=>'Leyes Bolivia','color'=>'#dc3545'],
         ];
@@ -363,7 +363,7 @@
             <thead>
                 <tr>
                     <th>Fecha y Hora</th>
-                    <th>Caso</th>
+                    <th>NUREJ</th>
                     <th>Abogado Asignado</th>
                     <th>Detalle</th>
                 </tr>

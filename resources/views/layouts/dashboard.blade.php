@@ -75,7 +75,7 @@
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.8.5 13 .5c-1.72 0-3.24.84-4.17 2.12L8 4 7.17 2.62C6.24 1.34 4.72.5 3 .5.2.5-2 2.54-2 4.66c0 .46.11.9.18 1.34H-4v2h2v12h16V8h2V6zm-7.83-3.37c.51-.68 1.3-1.13 2.2-1.13 1.46 0 2.63 1.17 2.63 2.5 0 .46-.14.88-.36 1.26-.04.07-.08.13-.12.2-.1.17-.22.32-.35.45A2.6 2.6 0 0112.7 6H11L12.17 2.63zm-4.34 0L10 6H8.3a2.6 2.6 0 01-1.47-.55c-.13-.13-.25-.28-.35-.45-.04-.07-.08-.13-.12-.2A2.47 2.47 0 016 3.16C6 1.83 7.17.66 8.63.66c.9 0 1.69.45 2.2 1.13zM16 18H6V8h10v10z"/>
                 </svg>
-                Casos
+                Casos 
             </a>
 
             <a href="{{ route('documentos.index') }}"
@@ -92,17 +92,9 @@
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2v-4H8v-2h4V7h2v4h4v2h-4v4z"/>
                 </svg>
-                Procesos Laborales
+                Calculadora de beneficios sociales
             </a>
             @endif
-
-            <a href="{{ route('gestion.index') }}"
-               class="nav-item {{ request()->routeIs('gestion.*') ? 'active' : '' }}">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/>
-                </svg>
-                Control y Asignaciones
-            </a>
 
             <a href="{{ route('leyes.index') }}"
                class="nav-item {{ request()->routeIs('leyes.*') ? 'active' : '' }}">
@@ -114,6 +106,13 @@
 
             @if(session('usuario_rol') === 'administrador')
             <div class="nav-section-title" style="margin-top:10px;">ADMINISTRACIÓN</div>
+            <a href="{{ route('gestion.index') }}"
+               class="nav-item {{ request()->routeIs('gestion.*') ? 'active' : '' }}">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/>
+                </svg>
+                Control y Asignaciones
+            </a>
             <a href="{{ route('usuarios.index') }}"
                class="nav-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -225,7 +224,7 @@
 
                 <div style="display:flex;gap:10px;align-items:center;">
                     <button id="btnInstalarApp" style="display:none;background:var(--gradient-gold);color:var(--navy-dark);border:none;border-radius:20px;padding:6px 14px;font-size:0.75rem;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(201,168,76,0.3);align-items:center;gap:6px;" title="Instalar como aplicación en este dispositivo">
-                        📲 Instalar App
+                        Instalar App
                     </button>
                     <button onclick="cambiarColorTema('#2a4365')" style="width:24px;height:24px;border-radius:50%;background:#2a4365;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,0.3);cursor:pointer;" title="Tema Celeste"></button>
                     <button onclick="cambiarColorTema('#1b4332')" style="width:24px;height:24px;border-radius:50%;background:#1b4332;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,0.3);cursor:pointer;" title="Tema Verde Oscuro"></button>

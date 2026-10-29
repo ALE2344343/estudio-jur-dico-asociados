@@ -36,7 +36,7 @@
                     ['Versión', 'v'.$documento->version],
                     ['Subido por', $documento->autor?->nombre_completo],
                     ['Fecha', $documento->created_at->format('d/m/Y H:i')],
-                    ['Caso', $documento->caso?->numero_caso],
+                    ['NUREJ', $documento->caso?->numero_caso],
                     ['Cliente', $documento->cliente?->nombre_completo],
                 ] as [$l,$v])
                 @if($v)

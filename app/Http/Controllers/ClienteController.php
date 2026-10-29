@@ -87,7 +87,7 @@ class ClienteController extends Controller
             'ci.regex'                       => 'El Carnet de Identidad (CI) no es creíble (debe tener entre 5 y 9 dígitos reales, ej: 7891234).',
             'ci.unique'                      => 'El Carnet de Identidad (CI) ya se encuentra registrado con otro cliente.',
             'telefono.regex'                 => 'El teléfono debe ser un número boliviano real (7 u 8 dígitos, ej: 22441234 o 72000001).',
-            'celular.regex'                  => 'El celular debe ser un número móvil boliviano real (exactamente 8 dígitos iniciando en 6 o 7, ej: 71234567 o 60045788).',
+            'celular.regex'                  => 'El celular debe ser un número móvil boliviano real (Ingrese 8 dígitos).',
             'email.email'                    => 'El correo electrónico ingresado no tiene un formato válido.',
             'fecha_nacimiento.after_or_equal'=> 'La fecha de nacimiento indica una edad irreal (debe ser posterior al año 1925).',
             'fecha_nacimiento.before'        => 'La fecha de nacimiento no puede ser hoy ni una fecha futura.'
@@ -96,7 +96,7 @@ class ClienteController extends Controller
         $data           = $request->all();
         $data['nombre'] = mb_convert_case(trim($request->nombre), MB_CASE_TITLE, 'UTF-8');
         $data['apellido'] = mb_convert_case(trim($request->apellido), MB_CASE_TITLE, 'UTF-8');
-        $data['codigo'] = Cliente::generarCodigo();
+        $data['codigo'] = Cliente::generarCodigo($request->ci, $request->ci_expedido);
         $data['telefono'] = $request->filled('telefono') ? trim($request->telefono) : '';
         if (empty($data['usuario_id'])) {
             $data['usuario_id'] = Session::get('usuario_id');
@@ -143,7 +143,7 @@ class ClienteController extends Controller
             'ci.regex'                       => 'El Carnet de Identidad (CI) no es creíble (debe tener entre 5 y 9 dígitos reales, ej: 7891234).',
             'ci.unique'                      => 'El Carnet de Identidad (CI) ya se encuentra registrado con otro cliente.',
             'telefono.regex'                 => 'El teléfono debe ser un número boliviano real (7 u 8 dígitos, ej: 22441234 o 72000001).',
-            'celular.regex'                  => 'El celular debe ser un número móvil boliviano real (exactamente 8 dígitos iniciando en 6 o 7, ej: 71234567 o 60045788).',
+            'celular.regex'                  => 'El celular debe ser un número móvil boliviano real (Ingrese 8 dígitos ).',
             'email.email'                    => 'El correo electrónico ingresado no tiene un formato válido.',
             'fecha_nacimiento.after_or_equal'=> 'La fecha de nacimiento indica una edad irreal (debe ser posterior al año 1925).',
             'fecha_nacimiento.before'        => 'La fecha de nacimiento no puede ser hoy ni una fecha futura.'
@@ -152,6 +152,7 @@ class ClienteController extends Controller
         $dataCliente = $request->except(['_token', '_method']);
         $dataCliente['nombre'] = mb_convert_case(trim($request->nombre), MB_CASE_TITLE, 'UTF-8');
         $dataCliente['apellido'] = mb_convert_case(trim($request->apellido), MB_CASE_TITLE, 'UTF-8');
+        $dataCliente['codigo'] = Cliente::generarCodigo($request->ci, $request->ci_expedido);
         $dataCliente['telefono'] = $request->filled('telefono') ? trim($request->telefono) : '';
         HistorialActividad::registrarCambios('Clientes', "cliente {$cliente->nombre_completo} (Cód: {$cliente->codigo})", $cliente, $dataCliente, [
             'nombre'           => 'Nombre',

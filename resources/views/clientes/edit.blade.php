@@ -16,11 +16,11 @@
         @csrf @method('PUT')
         <div class="form-body">
             <div class="form-grid">
-                <div class="form-group"><label class="form-label">Nombre * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Solo letras, se guardará con mayúscula inicial)</span></label>
+                <div class="form-group"><label class="form-label">Nombre * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">()</span></label>
                     <input type="text" name="nombre" class="form-control" value="{{ old('nombre',$cliente->nombre) }}" required>
                     @error('nombre')<span style="color:red;font-size:0.8rem;">{{ $message }}</span>@enderror
                 </div>
-                <div class="form-group"><label class="form-label">Apellido * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Solo letras, se guardará con mayúscula inicial)</span></label>
+                <div class="form-group"><label class="form-label">Apellido * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Se guardará con mayúscula inicial)</span></label>
                     <input type="text" name="apellido" class="form-control" value="{{ old('apellido',$cliente->apellido) }}" required>
                     @error('apellido')<span style="color:red;font-size:0.8rem;">{{ $message }}</span>@enderror
                 </div>
@@ -46,11 +46,11 @@
                     <input type="tel" name="telefono" class="form-control" value="{{ old('telefono',$cliente->telefono) }}">
                     @error('telefono')<span style="color:red;font-size:0.8rem;">{{ $message }}</span>@enderror
                 </div>
-                <div class="form-group"><label class="form-label">Celular <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Exactamente 8 dígitos iniciando en 6 o 7)</span></label>
+                <div class="form-group"><label class="form-label">Celular <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Ingrese 8 dígitos)</span></label>
                     <input type="tel" name="celular" class="form-control" value="{{ old('celular',$cliente->celular) }}">
                     @error('celular')<span style="color:red;font-size:0.8rem;">{{ $message }}</span>@enderror
                 </div>
-                <div class="form-group"><label class="form-label">Email <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Formato correo válido)</span></label>
+                <div class="form-group"><label class="form-label">Email <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Ingrese un correo electronico)</span></label>
                     <input type="email" name="email" class="form-control" value="{{ old('email',$cliente->email) }}">
                     @error('email')<span style="color:red;font-size:0.8rem;">{{ $message }}</span>@enderror
                 </div>

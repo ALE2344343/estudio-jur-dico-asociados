@@ -10,7 +10,7 @@
 set_time_limit(300);
 error_reporting(E_ALL);
 
-// ── Detectar raíz del proyecto Laravel ──────────────────────
+// Detectar raíz del proyecto Laravel 
 $basePath = realpath(__DIR__ . '/..');
 if (!$basePath || !file_exists($basePath . '/artisan')) {
     $candidates = [
@@ -25,7 +25,7 @@ if (!$basePath || !file_exists($basePath . '/artisan')) {
     }
 }
 
-// ── Detectar PHP ejecutable ─────────────────────────────────
+// Detectar PHP ejecutable 
 $phpCmd = 'php';
 $phpCandidates = [
     'C:\\nuevo xap\\php\\php.exe',
@@ -38,12 +38,12 @@ foreach ($phpCandidates as $p) {
     }
 }
 
-// ── Auto-detectar la URL base (ej: /SISTEMA) ────────────────
+//  Auto-detectar la URL base (ej: /SISTEMA) 
 $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
 $baseUrl = rtrim(str_replace('/install.php', '', $scriptName), '/');
 if (empty($baseUrl)) $baseUrl = '';
 
-// ── Funciones auxiliares ────────────────────────────────────
+//  Funciones auxiliares 
 $logs = [];
 
 function logStep($icon, $title, $detail, $ok = true) {
@@ -64,13 +64,13 @@ function runArtisan($phpCmd, $basePath, $command) {
     return ['output' => implode("\n", $output), 'code' => $code];
 }
 
-// ── ¿Ya se ejecutó la instalación? ──────────────────────────
+// ¿Ya se ejecutó la instalación? 
 $installing = isset($_GET['run']);
 $finished   = false;
 
 if ($installing) {
     // PASO 1 — Verificar PHP
-    logStep('🔍', 'Detectar PHP', "Ejecutable: <code>$phpCmd</code>", true);
+    logStep( 'Detectar PHP', "Ejecutable: <code>$phpCmd</code>", true);
 
     // PASO 2 — Verificar MySQL
     $mysqlOk = false;
@@ -81,9 +81,9 @@ if ($installing) {
         ]);
         $pdo->query('SELECT 1');
         $mysqlOk = true;
-        logStep('🗄️', 'Conexión a MySQL', 'MySQL está activo y responde correctamente.', true);
+        logStep( 'Conexión a MySQL', 'MySQL está activo y responde correctamente.', true);
     } catch (Exception $e) {
-        logStep('🗄️', 'Conexión a MySQL', 'MySQL no responde. Inicie MySQL en XAMPP.<br><small>' . htmlspecialchars($e->getMessage()) . '</small>', false);
+        logStep( 'Conexión a MySQL', 'MySQL no responde. Inicie MySQL en XAMPP.<br><small>' . htmlspecialchars($e->getMessage()) . '</small>', false);
     }
 
     if ($mysqlOk) {
@@ -93,12 +93,12 @@ if ($installing) {
         if (!file_exists($envFile)) {
             if (file_exists($envExample)) {
                 copy($envExample, $envFile);
-                logStep('📄', 'Crear archivo .env', 'Archivo .env creado a partir de .env.example.', true);
+                logStep( 'Crear archivo .env', 'Archivo .env creado a partir de .env.example.', true);
             } else {
-                logStep('📄', 'Crear archivo .env', 'No se encontró .env.example — abortando.', false);
+                logStep('Crear archivo .env', 'No se encontró .env.example — abortando.', false);
             }
         } else {
-            logStep('📄', 'Archivo .env', 'Ya existe, se conserva la configuración actual.', true);
+            logStep( 'Archivo .env', 'Ya existe, se conserva la configuración actual.', true);
         }
 
         // PASO 3.5 — Configurar APP_URL y ASSET_URL automáticamente
@@ -119,49 +119,41 @@ if ($installing) {
             }
 
             file_put_contents($envFile, $envContent);
-            logStep('🌐', 'Configurar URL', "APP_URL = <code>$fullUrl</code><br>ASSET_URL = <code>$baseUrl</code>", true);
+            logStep('Configurar URL', "APP_URL = <code>$fullUrl</code><br>ASSET_URL = <code>$baseUrl</code>", true);
         }
 
         // Generar clave de app (si no existe)
         $r = runArtisan($phpCmd, $basePath, 'key:generate --force');
-        logStep('🔑', 'Clave de aplicación', 'Clave APP_KEY generada correctamente.', $r['code'] === 0);
+        logStep( 'Clave de aplicación', 'Clave APP_KEY generada correctamente.', $r['code'] === 0);
 
         // PASO 4 — Crear base de datos
         try {
             $pdo->exec('CREATE DATABASE IF NOT EXISTS `bufete_abogados` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
-            logStep('🛢️', 'Base de datos', 'Base de datos <b>bufete_abogados</b> lista.', true);
+            logStep('Base de datos', 'Base de datos <b>bufete_abogados</b> lista.', true);
         } catch (Exception $e) {
-            logStep('🛢️', 'Base de datos', 'Error al crear la base de datos.<br><small>' . htmlspecialchars($e->getMessage()) . '</small>', false);
+            logStep( 'Base de datos', 'Error al crear la base de datos.<br><small>' . htmlspecialchars($e->getMessage()) . '</small>', false);
         }
 
         // PASO 5 — Migraciones
         $r = runArtisan($phpCmd, $basePath, 'migrate --force');
         $migOk = $r['code'] === 0;
         $migDetail = $migOk ? 'Tablas creadas/actualizadas correctamente.' : nl2br(htmlspecialchars($r['output']));
-        logStep('📋', 'Migraciones', $migDetail, $migOk);
+        logStep( 'Migraciones', $migDetail, $migOk);
 
         // PASO 6 — Seeders
         $r = runArtisan($phpCmd, $basePath, 'db:seed --force');
         $seedOk = $r['code'] === 0;
         $seedDetail = $seedOk ? 'Datos iniciales cargados (admin, abogados, clientes, casos, leyes).' : nl2br(htmlspecialchars($r['output']));
-        logStep('🌱', 'Datos iniciales', $seedDetail, $seedOk);
+        logStep('Datos iniciales', $seedDetail, $seedOk);
 
-        // PASO 7 — Storage link (en Windows Junction es 100% compatible con Apache)
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $storagePublic = $basePath . '/public/storage';
-            $storageAppPublic = $basePath . '/storage/app/public';
-            if (!file_exists($storagePublic)) {
-                @exec("cmd /c mklink /J \"$storagePublic\" \"$storageAppPublic\" 2>&1");
-            }
-        } else {
-            runArtisan($phpCmd, $basePath, 'storage:link');
-        }
-        logStep('🔗', 'Enlace de storage', 'Enlace público creado para archivos/documentos.', true);
+        // PASO 7 — Storage link
+        $r = runArtisan($phpCmd, $basePath, 'storage:link');
+        logStep( 'Enlace de storage', 'Enlace público creado para archivos/documentos.', true);
 
         // PASO 8 — Limpiar caché
         runArtisan($phpCmd, $basePath, 'config:clear');
         runArtisan($phpCmd, $basePath, 'cache:clear');
-        logStep('🧹', 'Limpiar caché', 'Caché de configuración limpiada.', true);
+        logStep( 'Limpiar caché', 'Caché de configuración limpiada.', true);
 
         $finished = true;
     }
@@ -278,7 +270,7 @@ if ($installing) {
 <body>
     <div class="container">
         <div class="header">
-            <div class="icon">⚖️</div>
+            <div class="icon"></div>
             <h1>Estudio Jurídico & Asociados</h1>
             <p>Asistente de Instalación del Sistema</p>
         </div>
@@ -300,10 +292,10 @@ if ($installing) {
             <a href="?run=1" class="btn btn-install" id="btnInstall"
                onclick="document.getElementById('btnInstall').style.display='none';
                         document.getElementById('spinner').classList.add('active');">
-                🚀 Instalar Sistema
+                Instalar Sistema
             </a>
             <div class="spinner" id="spinner">
-                ⏳ Instalando... esto puede tardar unos segundos, no cierre esta ventana.
+                Instalando... esto puede tardar unos segundos, no cierre esta ventana.
             </div>
 
 <?php elseif ($finished): ?>
@@ -323,7 +315,7 @@ if ($installing) {
             <?php endforeach; ?>
 
             <div class="credentials">
-                <h3>🔐 Credenciales de acceso</h3>
+                <h3>Credenciales de acceso</h3>
                 <table>
                     <tr><td class="label">Administrador:</td><td class="value">admin / admin123</td></tr>
                     <tr><td class="label">Abogado 1:</td><td class="value">cmamani / abogado123</td></tr>
@@ -331,7 +323,7 @@ if ($installing) {
                 </table>
             </div>
 
-            <a href="./" class="btn btn-enter">✅ Entrar al Sistema</a>
+            <a href="./" class="btn btn-enter">Entrar al Sistema</a>
 
 <?php else: ?>
             <?php foreach ($logs as $log): ?>
@@ -349,9 +341,9 @@ if ($installing) {
             </div>
             <?php endforeach; ?>
             <p style="color:#c0392b; text-align:center; margin-top:20px; font-weight:bold;">
-                ⚠️ Inicie MySQL en XAMPP y vuelva a intentarlo.
+                Inicie MySQL en XAMPP y vuelva a intentarlo.
             </p>
-            <a href="?run=1" class="btn btn-retry">🔄 Reintentar Instalación</a>
+            <a href="?run=1" class="btn btn-retry">Reintentar Instalación</a>
 <?php endif; ?>
         </div>
     </div>

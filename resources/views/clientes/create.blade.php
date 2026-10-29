@@ -23,12 +23,12 @@
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label">Nombre * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Solo letras, se guardará con mayúscula inicial)</span></label>
+                        <label class="form-label">Nombre * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Se guardará con mayúscula inicial)</span></label>
                         <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" placeholder="Ej: Roberto" required>
                         @error('nombre')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Apellido * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Solo letras, se guardará con mayúscula inicial)</span></label>
+                        <label class="form-label">Apellido * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Se guardará con mayúscula inicial)</span></label>
                         <input type="text" name="apellido" class="form-control" value="{{ old('apellido') }}" placeholder="Ej: Perez Gomez" required>
                         @error('apellido')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                     </div>
@@ -86,12 +86,12 @@
                         @error('telefono')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Celular <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Exactamente 8 dígitos iniciando en 6 o 7)</span></label>
+                        <label class="form-label">Celular <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Ingrese 8 dígitos)</span></label>
                         <input type="tel" name="celular" class="form-control" value="{{ old('celular') }}" placeholder="Ej: 71234567 o 60045788">
                         @error('celular')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Email <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Opcional, formato correo válido)</span></label>
+                        <label class="form-label">Email <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Opcional, ingrese un correo electronico)</span></label>
                         <input type="email" name="email" class="form-control" value="{{ old('email') }}" placeholder="cliente@correo.com">
                         @error('email')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                     </div>

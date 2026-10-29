@@ -28,12 +28,12 @@
         <div class="form-body">
             <div class="form-grid">
                 <div class="form-group">
-                    <label class="form-label">Nombre * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Solo letras, se guardará con mayúscula inicial)</span></label>
+                    <label class="form-label">Nombre * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Se guardará con mayúscula inicial)</span></label>
                     <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" placeholder="Ej: Carlos" required>
                     @error('nombre')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Apellido * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Solo letras, se guardará con mayúscula inicial)</span></label>
+                    <label class="form-label">Apellido * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Se guardará con mayúscula inicial)</span></label>
                     <input type="text" name="apellido" class="form-control" value="{{ old('apellido') }}" placeholder="Ej: Mamani Quispe" required>
                     @error('apellido')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                 </div>
@@ -43,7 +43,7 @@
                     @error('username')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Email * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Correo corporativo o personal válido)</span></label>
+                    <label class="form-label">Email * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Correo corporativo o personal)</span></label>
                     <input type="email" name="email" class="form-control" value="{{ old('email') }}" placeholder="ejemplo@estudiojuridico.bo" required>
                     @error('email')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                 </div>
@@ -60,7 +60,7 @@
                     @error('password')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Confirmar Contraseña * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Debe ser idéntica a la contraseña)</span></label>
+                    <label class="form-label">Confirmar Contraseña * <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Repita la contraseña)</span></label>
                     <div style="position:relative;display:flex;align-items:center;">
                         <input type="password" id="createPasswordConfirmInput" name="password_confirmation" class="form-control" required placeholder="Repita la contraseña" style="padding-right:40px;">
                         <button type="button" onclick="togglePasswordVisibility('createPasswordConfirmInput', 'eyeCreate2Open', 'eyeCreate2Closed')" title="Mostrar/Ocultar"
@@ -78,7 +78,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Teléfono <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Número boliviano de 7 u 8 dígitos)</span></label>
+                    <label class="form-label">Teléfono <span style="font-size:0.75rem;font-weight:normal;color:var(--text-gray);">(Número de 7 a 8 dígitos)</span></label>
                     <input type="tel" name="telefono" class="form-control" value="{{ old('telefono') }}" placeholder="Ej: 72000001">
                     @error('telefono')<span style="color:#dc3545;font-size:0.78rem;">{{ $message }}</span>@enderror
                 </div>
@@ -92,7 +92,7 @@
                 </div>
                 <div class="form-group" id="grupoMatricula">
                     <label class="form-label">Matrícula de Abogado</label>
-                    <input type="text" name="matricula" class="form-control" value="{{ old('matricula') }}" placeholder="Ej: MAT-001-2020">
+                    <input type="text" name="matricula" class="form-control" value="{{ old('matricula') }}" placeholder="Ej: VMSQ10093556">
                 </div>
             </div>
         </div>

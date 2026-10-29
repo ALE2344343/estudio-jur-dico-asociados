@@ -44,7 +44,7 @@
                 <th>CÓDIGO<br><span style="font-size:0.65rem;color:var(--text-gray);font-weight:normal;">FECHA REGISTRO</span></th>
                 <th>Nombre Completo</th>
                 <th>C.I.</th>
-                <th>Teléfono</th>
+                <th>Celular</th>
                 <th>Ciudad</th>
                 <th>Abogado</th>
                 <th>Estado</th>
@@ -64,7 +64,7 @@
                     </a>
                 </td>
                 <td style="font-size:0.85rem;">{{ $cliente->ci }} {{ $cliente->ci_expedido ? '('.$cliente->ci_expedido.')' : '' }}</td>
-                <td style="font-size:0.85rem;">{{ $cliente->telefono }}</td>
+                <td style="font-size:0.85rem;">{{ $cliente->celular ?: ($cliente->telefono ?: '—') }}</td>
                 <td style="font-size:0.82rem;color:var(--text-gray);">{{ $cliente->ciudad }}</td>
                 <td style="font-size:0.82rem;">{{ $cliente->abogado?->nombre ?? '—' }}</td>
                 <td><span class="badge {{ $cliente->estado==='activo'?'badge-active':'badge-closed' }}">{{ ucfirst($cliente->estado) }}</span></td>

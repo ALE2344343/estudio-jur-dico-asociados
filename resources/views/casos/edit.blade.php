@@ -1,9 +1,9 @@
 @extends('layouts.dashboard')
-@section('title','Editar Caso')
-@section('page-title','Editar Caso')
+@section('title','Editar CASO')
+@section('page-title','Editar CASO')
 
 @section('top-bar-actions')
-<a href="{{ route('casos.show', $caso->id) }}" class="btn-secondary">← Ver Caso</a>
+<a href="{{ route('casos.show', $caso->id) }}" class="btn-secondary">← Ver CASO</a>
 @endsection
 
 @section('content')
@@ -20,7 +20,7 @@
                 <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--gold-dark);letter-spacing:2px;margin-bottom:15px;border-bottom:1px solid rgba(201,168,76,0.2);padding-bottom:8px;">INFORMACIÓN DEL CASO</div>
                 <div class="form-grid">
                     <div class="form-group span-2">
-                        <label class="form-label">Título del Caso *</label>
+                        <label class="form-label">Título del Proceso *</label>
                         <input type="text" name="titulo" class="form-control" value="{{ old('titulo',$caso->titulo) }}" required>
                     </div>
                     <div class="form-group">
