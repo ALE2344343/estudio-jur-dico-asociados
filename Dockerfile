@@ -1,6 +1,6 @@
 FROM php:8.2-cli-alpine
 
-# Instalar dependencias del sistema y extensiones de PHP requeridas por Laravel y MySQL
+# Instalar dependencias del sistema y extensiones de PHP para PostgreSQL, MySQL y Laravel
 RUN apk add --no-cache \
     git \
     curl \
@@ -10,7 +10,8 @@ RUN apk add --no-cache \
     unzip \
     oniguruma-dev \
     libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+    postgresql-dev \
+    && docker-php-ext-install pdo pdo_pgsql pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -28,12 +29,14 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Puerto expuesto por Render (por defecto Render asigna la variable $PORT o 10000)
+# Puerto expuesto por Render
 ENV PORT=10000
 EXPOSE 10000
 
-# Script de arranque
+# Script de arranque: limpia caché, ejecuta migraciones + seeders y levanta el servidor
 CMD php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear \
+    && php artisan migrate --force \
+    && php artisan db:seed --force \
     && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
