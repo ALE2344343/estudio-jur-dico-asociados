@@ -39,7 +39,7 @@ class Caso extends Model
 
     public function documentos()
     {
-        return $this->hasMany(Documento::class, 'caso_id');
+        return $this->hasMany(Documento::class, 'caso_id')->where('estado', '!=', 'eliminado');
     }
 
     public function calculos()

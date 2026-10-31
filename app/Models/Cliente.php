@@ -36,7 +36,7 @@ class Cliente extends Model
 
     public function documentos()
     {
-        return $this->hasMany(Documento::class, 'cliente_id');
+        return $this->hasMany(Documento::class, 'cliente_id')->where('estado', '!=', 'eliminado');
     }
 
     public function calculos()
