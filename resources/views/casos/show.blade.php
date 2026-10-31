@@ -101,7 +101,7 @@
             @if($caso->documentos->count() > 0)
             <div style="padding:15px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
                 @foreach($caso->documentos as $doc)
-                <a href="{{ $doc->es_drive ? $doc->drive_link : asset('storage/'.$doc->archivo) }}"
+                <a href="{{ route('documentos.descargar', $doc->id) }}"
                    target="_blank" class="doc-card" style="padding:12px;">
                     <span class="doc-icon" style="font-size:2rem;">{{ $doc->icono }}</span>
                     <div class="doc-name" style="font-size:0.78rem;">{{ Str::limit($doc->nombre,20) }}</div>
