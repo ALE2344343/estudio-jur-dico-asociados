@@ -148,7 +148,7 @@ class DocumentoController extends Controller
             'archivo'    => 'Archivo Digital',
         ]);
         $doc->update($data);
-        return redirect()->route('documentos.index')->with('success','Documento actualizado.');
+        return back()->with('success','Documento actualizado.');
     }
 
     public function destroy(int $id)
@@ -159,6 +159,6 @@ class DocumentoController extends Controller
         $nomDoc = $doc->nombre;
         $doc->update(['estado' => 'eliminado']);
         HistorialActividad::registrar('Documentos', 'Eliminación', "Eliminó el documento '{$nomDoc}'", $id);
-        return redirect()->route('documentos.index')->with('success','Documento eliminado.');
+        return back()->with('success','Documento eliminado.');
     }
 }

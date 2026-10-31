@@ -99,14 +99,55 @@
                 <button onclick="document.getElementById('modalDoc').style.display='flex'" class="btn-primary" style="font-size:0.72rem;padding:6px 12px;">+ Agregar</button>
             </div>
             @if($caso->documentos->count() > 0)
-            <div style="padding:15px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+            <div style="padding:15px;display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:15px;">
                 @foreach($caso->documentos as $doc)
-                <a href="{{ route('documentos.descargar', $doc->id) }}"
-                   target="_blank" class="doc-card" style="padding:12px;">
-                    <span class="doc-icon" style="font-size:2rem;">{{ $doc->icono }}</span>
-                    <div class="doc-name" style="font-size:0.78rem;">{{ Str::limit($doc->nombre,20) }}</div>
-                    <div class="doc-meta">{{ $doc->tipo }}</div>
-                </a>
+                <div class="doc-card" style="position:relative;padding:12px;display:flex;flex-direction:column;justify-content:space-between;border-radius:10px;background:#fff;border:1px solid rgba(201,168,76,0.2);box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                    <!-- Botones de Acción (Editar y Eliminar) -->
+                    <div style="position:absolute; top:8px; right:8px; display:flex; gap:5px; z-index:3;">
+                        <a href="{{ route('documentos.edit', $doc->id) }}" class="btn-edit" title="Editar / Modificar" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;background:rgba(201,168,76,0.15);border-radius:6px;">
+                            <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:var(--gold-dark);"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </a>
+                        <form action="{{ route('documentos.destroy', $doc->id) }}" method="POST" onsubmit="return confirm('¿Seguro que desea eliminar este documento?');" style="display:inline;margin:0;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-danger" title="Eliminar" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border-radius:6px;">
+                                <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Enlace y Vista Previa Real (Miniatura de imagen o archivo) -->
+                    <a href="{{ route('documentos.descargar', $doc->id) }}" target="_blank" style="text-decoration:none; color:inherit; display:block;">
+                        <div style="height:110px;width:100%;border-radius:6px;overflow:hidden;background:#f8fafc;display:flex;align-items:center;justify-content:center;margin-bottom:10px;border:1px solid #e2e8f0;">
+                            @if(!$doc->es_drive && in_array(strtolower($doc->extension), ['jpg','jpeg','png','webp','gif']))
+                                <img src="{{ route('documentos.descargar', $doc->id) }}" alt="{{ $doc->nombre }}" style="width:100%;height:100%;object-fit:cover;">
+                            @elseif(!$doc->es_drive && strtolower($doc->extension) === 'pdf')
+                                <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                                    <svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:#e11d48;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9.5 8.5h-2V13h2c.55 0 1-.45 1-1s-.45-.5-1-.5zm0-2.5h-2v1.5h2c.55 0 1-.45 1-1s-.45-.5-1-.5zm7 5h-1.5V11h-1v2.5h-1.5V9h4v5zm-3.5-3.5v-1h-1v1h1zM9.5 8H6v8h3.5c1.38 0 2.5-1.12 2.5-2.5v-3c0-1.38-1.12-2.5-2.5-2.5z"/></svg>
+                                    <span style="font-size:0.7rem;font-weight:700;color:#e11d48;letter-spacing:0.5px;">DOCUMENTO PDF</span>
+                                </div>
+                            @elseif($doc->es_drive)
+                                <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                                    <svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:#4285f4;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                                    <span style="font-size:0.7rem;font-weight:700;color:#4285f4;">GOOGLE DRIVE</span>
+                                </div>
+                            @else
+                                <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                                    <svg viewBox="0 0 24 24" style="width:38px;height:38px;fill:#64748b;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                                    <span style="font-size:0.7rem;font-weight:700;color:#64748b;">{{ strtoupper($doc->extension ?: 'DOC') }}</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="doc-name" style="font-size:0.82rem;font-weight:600;color:var(--navy);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $doc->nombre }}">
+                            {{ $doc->nombre }}
+                        </div>
+                        <div class="doc-meta" style="font-size:0.72rem;color:var(--text-gray);display:flex;justify-content:space-between;align-items:center;">
+                            <span style="background:rgba(201,168,76,0.15);color:var(--gold-dark);padding:2px 6px;border-radius:4px;font-weight:600;">{{ $doc->tipo }}</span>
+                            <span>{{ $doc->es_drive ? 'Drive' : $doc->tamano_formateado }}</span>
+                        </div>
+                    </a>
+                </div>
                 @endforeach
             </div>
             @else
