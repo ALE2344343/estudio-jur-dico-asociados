@@ -5,7 +5,7 @@
 @section('top-bar-actions')
 <a href="{{ route('documentos.index') }}" class="btn-secondary">← Volver</a>
 @if($documento->archivo)
-<a href="{{ asset('storage/'.$documento->archivo) }}" download class="btn-primary">⬇️ Descargar</a>
+<a href="{{ route('documentos.descargar', $documento->id) }}" download class="btn-primary">⬇️ Descargar</a>
 @elseif($documento->es_drive)
 <a href="{{ $documento->drive_link }}" target="_blank" class="btn-primary">📁 Abrir en Drive</a>
 @endif
@@ -82,16 +82,16 @@
                 </div>
                 @elseif($documento->archivo)
                     @if(in_array($documento->extension, ['jpg','jpeg','png','gif','webp']))
-                    <img src="{{ asset('storage/'.$documento->archivo) }}" style="max-width:100%;max-height:500px;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+                    <img src="{{ route('documentos.descargar', $documento->id) }}" style="max-width:100%;max-height:500px;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.1);">
                     @elseif($documento->extension === 'pdf')
-                    <iframe src="{{ asset('storage/'.$documento->archivo) }}" style="width:100%;height:500px;border:none;border-radius:8px;"></iframe>
+                    <iframe src="{{ route('documentos.descargar', $documento->id) }}" style="width:100%;height:500px;border:none;border-radius:8px;"></iframe>
                     @else
                     <div style="margin-bottom:20px;">
                         <div style="font-size:4rem;margin-bottom:10px;">{{ $documento->icono }}</div>
                         <div style="font-size:0.88rem;color:var(--text-gray);margin-bottom:20px;">
                             Archivo: <strong>{{ basename($documento->archivo) }}</strong> ({{ $documento->tamano_formateado }})
                         </div>
-                        <a href="{{ asset('storage/'.$documento->archivo) }}" download class="btn-primary">⬇️ Descargar Archivo</a>
+                        <a href="{{ route('documentos.descargar', $documento->id) }}" download class="btn-primary">⬇️ Descargar Archivo</a>
                     </div>
                     @endif
                 @else
