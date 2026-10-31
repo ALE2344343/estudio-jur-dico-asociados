@@ -63,7 +63,7 @@
             </form>
         </div>
         
-        <a href="{{ $doc->es_drive ? $doc->drive_link : asset('storage/'.$doc->archivo) }}"
+        <a href="{{ route('documentos.descargar', $doc->id) }}"
            target="_blank" style="text-decoration:none; color:inherit; display:block;" title="{{ $doc->descripcion }}">
             <span class="doc-icon">{{ $doc->icono }}</span>
             <div class="doc-name">{{ $doc->nombre }}</div>

@@ -33,10 +33,11 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
 ENV PORT=10000
 EXPOSE 10000
 
-# Script de arranque: limpia caché, ejecuta migraciones + seeders y levanta el servidor
+# Script de arranque: limpia caché, ejecuta migraciones + seeders, crea enlace simbólico de storage y levanta el servidor
 CMD php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear \
     && php artisan migrate --force \
     && php artisan db:seed --force \
+    && php artisan storage:link || true \
     && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}

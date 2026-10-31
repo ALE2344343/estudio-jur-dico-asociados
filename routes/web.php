@@ -48,6 +48,17 @@ Route::middleware([])->group(function () {
     // Documentos
     Route::get('/documentos', [DocumentoController::class, 'index'])->name('documentos.index');
     Route::post('/documentos', [DocumentoController::class, 'store'])->name('documentos.store');
+    Route::get('/documentos/{id}/archivo', function ($id) {
+        $doc = \App\Models\Documento::findOrFail($id);
+        if ($doc->es_drive && $doc->drive_link) {
+            return redirect()->away($doc->drive_link);
+        }
+        $fullPath = storage_path('app/public/' . $doc->archivo);
+        if (!file_exists($fullPath)) {
+            abort(404, 'Archivo no encontrado');
+        }
+        return response()->file($fullPath);
+    })->name('documentos.descargar');
     Route::get('/documentos/{id}/edit', [DocumentoController::class, 'edit'])->name('documentos.edit');
     Route::put('/documentos/{id}', [DocumentoController::class, 'update'])->name('documentos.update');
     Route::get('/documentos/{id}', [DocumentoController::class, 'show'])->name('documentos.show');
