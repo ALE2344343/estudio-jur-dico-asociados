@@ -53,11 +53,21 @@ Route::middleware([])->group(function () {
         if ($doc->es_drive && $doc->drive_link) {
             return redirect()->away($doc->drive_link);
         }
-        $fullPath = storage_path('app/public/' . $doc->archivo);
-        if (!file_exists($fullPath)) {
-            abort(404, 'Archivo no encontrado');
+
+        // Buscar primero en storage/app/public/ y luego en storage/app/
+        $candidates = [
+            storage_path('app/public/' . $doc->archivo),
+            storage_path('app/' . $doc->archivo),
+            public_path('storage/' . $doc->archivo),
+        ];
+
+        foreach ($candidates as $file) {
+            if (file_exists($file) && !is_dir($file)) {
+                return response()->file($file);
+            }
         }
-        return response()->file($fullPath);
+
+        abort(404, 'El archivo físico no se encuentra en el servidor. En Render los archivos subidos al disco efímero se reinician con cada nuevo despliegue. Por favor vuelve a subir el documento.');
     })->name('documentos.descargar');
     Route::get('/documentos/{id}/edit', [DocumentoController::class, 'edit'])->name('documentos.edit');
     Route::put('/documentos/{id}', [DocumentoController::class, 'update'])->name('documentos.update');
